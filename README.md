@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Relax Tinubu Is Fixing Nigeria (RTIFN) - Official Website
 
-## Getting Started
+Welcome to the official web platform for **Relax Tinubu Is Fixing Nigeria (RTIFN)**. We are a grassroots group advancing the Renewed Hope Agenda. As a sister organization to the City Boy Movement, our mission is to mobilize communities and champion the vision of President Bola Ahmed Tinubu.
 
-First, run the development server:
+## Overview
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+This repository contains the source code for the RTIFN website. The platform is designed to be a central hub for community mobilization, information sharing, and promoting the initiatives of the Renewed Hope Agenda.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Features & Roadmap
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The platform is being built progressively:
+- **Phase 1 (Current)**: High-performance, modern "Coming Soon" interface to capture initial interest and build a mailing list. Features premium glassmorphism UI and dynamic backgrounds.
+- **Phase 2 (Upcoming)**: Full site rollout including news segments, community forums, event calendars, and detailed descriptions of grassroots programs.
+- **Responsive Design**: Flawless scaling from mobile devices up to large desktop displays across all pages.
+- **Modern Architecture**: Fast, SEO-optimized, and built to scale using Next.js.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+- `app/`: Next.js App Router containing pages, layouts, and routing logic.
+  - `page.tsx`: The main entry point of the website.
+  - `layout.tsx`: Root layout structure covering meta tags, global fonts, and base HTML.
+  - `globals.css`: Global styles, CSS variables, keyframe animations, and custom setups.
+- `public/`: Directory containing static media assets and branding resources (e.g., RTIFN and Renewed Hope logos).
 
-To learn more about Next.js, take a look at the following resources:
+## Technologies Used
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Next.js 15+** (App Router)
+- **React 19**
+- **Vanilla CSS** with modern features and variables
+- **TypeScript**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## License
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Copyright &copy; Relax Tinubu Is Fixing Nigeria (RTIFN). All rights reserved.
