@@ -34,29 +34,29 @@ const SoundPermissionModal = () => {
 
                         <div className='relative z-10'>
                             {/* Icon Container */}
-                            <div className='w-20 h-20 bg-darkgreen/5 rounded-3xl flex items-center justify-center mx-auto mb-8 relative group'>
-                                <div className='absolute inset-0 bg-darkgreen/5 rounded-3xl animate-pulse group-hover:scale-110 transition-transform' />
-                                <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-darkgreen relative z-10">
+                            <div className='w-16 h-16 md:w-20 md:h-20 bg-darkgreen/5 rounded-2xl md:rounded-3xl flex items-center justify-center mx-auto mb-6 md:mb-8 relative group'>
+                                <div className='absolute inset-0 bg-darkgreen/5 rounded-2xl md:rounded-3xl animate-pulse group-hover:scale-110 transition-transform' />
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-darkgreen relative z-10 md:w-9 md:h-9">
                                     <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                                     <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                                 </svg>
                             </div>
 
-                            <h2 className='font-laybar text-4xl text-darkgreen mb-4'>Experience the Vision</h2>
-                            <p className='text-gray-600 mb-10 leading-relaxed text-lg'>
-                                For better Experience, we recommend you enable sound
+                            <h2 className='font-laybar text-3xl md:text-4xl text-darkgreen mb-3 md:mb-4'>Experience the Vision</h2>
+                            <p className='text-gray-600 mb-8 md:mb-10 leading-relaxed text-base md:text-lg px-4'>
+                                For a truly immersive experience, we recommend enabling sound
                             </p>
 
-                            <div className='flex flex-col gap-4'>
+                            <div className='flex flex-col gap-3 md:gap-4 px-2'>
                                 <button
                                     onClick={() => setSoundPermission(true)}
-                                    className='bg-darkgreen text-milk py-5 px-8 rounded-2xl font-semibold text-lg shadow-xl shadow-darkgreen/20 transition-all hover:scale-[1.02] active:scale-[0.98] hover:brightness-110'
+                                    className='bg-darkgreen text-milk py-4 md:py-5 px-8 rounded-xl md:rounded-2xl font-bold md:font-semibold text-lg shadow-xl shadow-darkgreen/20 transition-all hover:scale-[1.02] active:scale-[0.98]'
                                 >
-                                    Yes, Enable Sound
+                                    Enable Audio
                                 </button>
                                 <button
                                     onClick={() => setSoundPermission(false)}
-                                    className='bg-transparent text-darkgreen/50 py-3 px-8 rounded-2xl font-medium transition-all hover:text-darkgreen hover:bg-darkgreen/5 active:scale-[0.98]'
+                                    className='bg-transparent text-darkgreen/40 py-3 px-8 rounded-xl md:rounded-2xl font-medium text-sm md:text-base transition-all hover:text-darkgreen hover:bg-darkgreen/5 active:scale-[0.98]'
                                 >
                                     Stay Muted
                                 </button>

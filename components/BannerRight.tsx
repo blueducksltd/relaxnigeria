@@ -12,8 +12,8 @@ const BannerRight = () => {
     const duplicatedItems = [...items, ...items, ...items, ...items, ...items, ...items];
 
     return (
-        <main className='-skew-y-3 select-none'>
-            <section className='w-full py-7 bg-darkgreen flex items-center overflow-hidden'>
+        <main className='-skew-y-2 md:-skew-y-3 select-none'>
+            <section className='w-full py-5 md:py-7 bg-darkgreen flex items-center'>
                 <motion.div
                     className='flex items-center gap-x-5 whitespace-nowrap px-6'
                     animate={{ x: ["0%", "-50%"] }}
@@ -25,7 +25,7 @@ const BannerRight = () => {
                 >
                     {duplicatedItems.map((item, index) => (
                         <div key={index} className="flex items-center gap-x-5">
-                            <p className={`${item.color} text-2xl font-bold uppercase tracking-wider`}>
+                            <p className={`${item.color} text-lg md:text-2xl font-bold uppercase tracking-wider`}>
                                 {item.text}
                             </p>
                         </div>

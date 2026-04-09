@@ -44,10 +44,10 @@ const Hero = () => {
     }, [isMuted])
 
     return (
-        <main className='px-20 pt-60 pb-32'>
-            <section className='flex items-start gap-28 justify-center'>
+        <main className='px-6 md:px-20 pt-32 md:pt-60 pb-20 md:pb-32'>
+            <section className='flex flex-col lg:flex-row items-center lg:items-start gap-12 lg:gap-28 justify-center'>
                 <div
-                    className="relative w-[700px] h-[550px] border-4 border-white shadow-4xl overflow-hidden"
+                    className="relative w-full max-w-[700px] aspect-700/550 border-4 border-white shadow-4xl overflow-hidden"
                     style={{
                         WebkitMask: "url('/nigeria2.png') center/contain no-repeat",
                         mask: "url('/nigeria2.png') center/contain no-repeat",
@@ -65,13 +65,13 @@ const Hero = () => {
                     />
                 </div>
 
-                <div className='flex flex-col gap-5'>
-                    <h2 className='font-laybar text-8xl w-lg text-darkgreen'>Relax Tinubu is Fixing Nigeria</h2>
-                    <p className='w-120'>Hope is rising, progress is unfolding. Stand with Bola Ahmed Tinubu in 2027 to continue building a stronger, united Nigeria for all — Relax Tinubu Is Fixing Nigeria today.!!!</p>
+                <div className='flex flex-col gap-5 text-center lg:text-left'>
+                    <h2 className='font-laybar text-5xl md:text-8xl lg:w-lg text-darkgreen'>Relax Tinubu is Fixing Nigeria</h2>
+                    <p className='md:w-120 mx-auto lg:mx-0 text-sm md:text-base'>Hope is rising, progress is unfolding. Stand with Bola Ahmed Tinubu in 2027 to continue building a stronger, united Nigeria for all — Relax Tinubu Is Fixing Nigeria today.!!!</p>
 
-                    <div className='flex items-center gap-5'>
-                        <button className='bg-brown text-black px-12 py-3 rounded-full'>Donate</button>
-                        <button className='bg-darkgreen text-milk px-12 py-3 rounded-full'>Volunteer</button>
+                    <div className='flex flex-wrap items-center justify-center lg:justify-start gap-4 md:gap-5 mt-4'>
+                        <button className='bg-brown text-black px-8 md:px-12 py-3 rounded-full hover:scale-105 transition-transform w-full sm:w-auto'>Donate</button>
+                        <button className='bg-darkgreen text-milk px-8 md:px-12 py-3 rounded-full hover:scale-105 transition-transform w-full sm:w-auto'>Volunteer</button>
                     </div>
                 </div>
             </section>

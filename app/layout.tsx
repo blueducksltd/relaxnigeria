@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import Header from "@/components/Header";
 import { SoundProvider } from "@/contexts/SoundContext";
-import SoundPermissionModal from "@/components/SoundPermissionModal";
-import Footer from "@/components/Footer";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,10 +28,7 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${laybar.variable}`}>
       <body>
         <SoundProvider>
-          <Header />
           {children}
-          <SoundPermissionModal />
-          <Footer />
         </SoundProvider>
       </body>
     </html>

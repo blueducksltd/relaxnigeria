@@ -1,14 +1,15 @@
 'use client'
 
-import Link from 'next/link'
 import React, { useState } from 'react'
-import SoundToggle from './SoundToggle'
-import { motion, useScroll, useMotionValueEvent } from 'motion/react'
+import Link from 'next/link'
 import Image from 'next/image'
+import SoundToggle from './SoundToggle'
+import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'motion/react'
 
 const Header = () => {
     const [isVisible, setIsVisible] = useState(true)
     const [isScrolled, setIsScrolled] = useState(false)
+    const [isMenuOpen, setIsMenuOpen] = useState(false)
     const { scrollY } = useScroll()
 
     useMotionValueEvent(scrollY, "change", (latest) => {
@@ -24,6 +25,7 @@ const Header = () => {
         // Determine visibility based on scroll direction
         if (latest > previous && latest > 150) {
             setIsVisible(false) // Scrolling down - Hide
+            setIsMenuOpen(false) // Close menu on scroll down
         } else if (latest < previous) {
             setIsVisible(true) // Scrolling up - Show
         }
@@ -31,6 +33,8 @@ const Header = () => {
         // Scrolled state for visual styling
         setIsScrolled(latest > 50)
     })
+
+    const toggleMenu = () => setIsMenuOpen(!isMenuOpen)
 
     return (
         <motion.header
@@ -42,35 +46,108 @@ const Header = () => {
                 stiffness: 260,
                 damping: 25
             }}
-            className={`fixed top-0 left-0 right-0 z-100 w-full transition-colors duration-500 ${isScrolled ? 'bg-milk/80 backdrop-blur-lg shadow-[0_2px_15px_-3px_rgba(36,83,51,0.05)] border-b border-darkgreen/5' : 'bg-transparent'
+            className={`fixed top-0 left-0 right-0 z-100 w-full transition-colors duration-500 ${isScrolled || isMenuOpen ? 'bg-milk/80 backdrop-blur-lg shadow-[0_2px_15px_-3px_rgba(36,83,51,0.05)] border-b border-darkgreen/5' : 'bg-transparent'
                 }`}
         >
-            <nav className={`flex justify-between items-center px-20 font-light transition-all duration-500 ${isScrolled ? 'py-4' : 'py-7'}`}>
-                <Link href={'/'} className='text-xl font-medium tracking-tight hover:opacity-70 transition-opacity'>
-                    <Image src={'/logo.png'} alt='Logo' width={150} height={150} />
+            <nav className={`flex justify-between items-center px-6 md:px-20 font-light transition-all duration-500 ${isScrolled ? 'py-4' : 'py-7'}`}>
+                <Link href={'/'} className='relative z-110'>
+                    <Image
+                        src={'/logo.png'}
+                        alt='Logo'
+                        width={150}
+                        height={40}
+                        className="w-28 md:w-36 h-auto"
+                        priority
+                    />
                 </Link>
 
-                <ul className='flex items-center gap-4 bg-white/40 p-1.5 rounded-full border border-darkgreen/5 backdrop-blur-sm shadow-sm'>
-                    <li>
-                        <Link href={'/'} className='bg-lightgreen text-darkgreen font-medium rounded-full px-5 py-2.5 hover:scale-[1.02] active:scale-[0.98] transition-all inline-block'>Works</Link>
-                    </li>
-                    <li>
-                        <Link href={'/'} className='rounded-full px-5 py-2.5 hover:bg-darkgreen/5 transition-all inline-block'>About</Link>
-                    </li>
-                    <li>
-                        <Link href={'/'} className='rounded-full px-5 py-2.5 hover:bg-darkgreen/5 transition-all inline-block'>Event</Link>
-                    </li>
-                    <li>
-                        <Link href={'/'} className='rounded-full px-5 py-2.5 hover:bg-darkgreen/5 transition-all inline-block'>Gallery</Link>
-                    </li>
-                    <li className='ml-2 h-8 w-px bg-darkgreen/10' />
-                    <li className='pl-2 pr-4'>
+                {/* Desktop Menu */}
+                <div className='hidden lg:flex items-center gap-4 bg-white/40 p-1.5 rounded-full border border-darkgreen/5 backdrop-blur-sm shadow-sm'>
+                    <ul className='flex items-center gap-2'>
+                        <li>
+                            <Link href={'/'} className='bg-lightgreen text-darkgreen font-medium rounded-full px-5 py-2.5 hover:scale-[1.02] active:scale-[0.98] transition-all inline-block'>Works</Link>
+                        </li>
+                        <li>
+                            <Link href={'/'} className='rounded-full px-5 py-2.5 hover:bg-darkgreen/5 transition-all inline-block'>About</Link>
+                        </li>
+                        <li>
+                            <Link href={'/'} className='rounded-full px-5 py-2.5 hover:bg-darkgreen/5 transition-all inline-block'>Event</Link>
+                        </li>
+                        <li>
+                            <Link href={'/'} className='rounded-full px-5 py-2.5 hover:bg-darkgreen/5 transition-all inline-block'>Gallery</Link>
+                        </li>
+                    </ul>
+                    <li className='h-8 w-px bg-darkgreen/10 mx-2 list-none' />
+                    <div className='pr-4'>
                         <SoundToggle />
-                    </li>
-                </ul>
+                    </div>
+                </div>
 
-                <Link href={'/'} className='border-2 border-darkgreen text-darkgreen font-medium rounded-full px-7 py-2.5 hover:bg-darkgreen hover:text-white hover:shadow-lg hover:shadow-darkgreen/20 transition-all active:scale-95'>Join us</Link>
+                <Link href={'/'} className='hidden lg:inline-block border-2 border-darkgreen text-darkgreen font-medium rounded-full px-7 py-2.5 hover:bg-darkgreen hover:text-white hover:shadow-lg hover:shadow-darkgreen/20 transition-all active:scale-95'>Join us</Link>
+
+                {/* Mobile Menu Toggle */}
+                <button
+                    onClick={toggleMenu}
+                    className="lg:hidden relative z-110 p-2 text-darkgreen focus:outline-none"
+                    aria-label="Toggle menu"
+                >
+                    <div className="w-6 h-5 relative flex flex-col justify-between">
+                        <motion.span
+                            animate={isMenuOpen ? { rotate: 45, y: 9 } : { rotate: 0, y: 0 }}
+                            className="w-full h-0.5 bg-current rounded-full origin-center"
+                        />
+                        <motion.span
+                            animate={isMenuOpen ? { opacity: 0 } : { opacity: 1 }}
+                            className="w-full h-0.5 bg-current rounded-full"
+                        />
+                        <motion.span
+                            animate={isMenuOpen ? { rotate: -45, y: -9 } : { rotate: 0, y: 0 }}
+                            className="w-full h-0.5 bg-current rounded-full origin-center"
+                        />
+                    </div>
+                </button>
             </nav>
+
+            {/* Mobile Menu Overlay */}
+            <AnimatePresence>
+                {isMenuOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: '100vh' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className='lg:hidden fixed inset-0 bg-milk z-105 flex flex-col pt-32 px-6'
+                    >
+                        <ul className='flex flex-col gap-6 text-2xl font-laybar font-medium text-darkgreen'>
+                            <motion.li initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
+                                <Link href={'/'} onClick={toggleMenu} className="block py-2 border-b border-darkgreen/5">Works</Link>
+                            </motion.li>
+                            <motion.li initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.2 }}>
+                                <Link href={'/'} onClick={toggleMenu} className="block py-2 border-b border-darkgreen/5">About</Link>
+                            </motion.li>
+                            <motion.li initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
+                                <Link href={'/'} onClick={toggleMenu} className="block py-2 border-b border-darkgreen/5">Event</Link>
+                            </motion.li>
+                            <motion.li initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
+                                <Link href={'/'} onClick={toggleMenu} className="block py-2 border-b border-darkgreen/5">Gallery</Link>
+                            </motion.li>
+                        </ul>
+
+                        <div className="mt-auto mb-10 flex flex-col gap-6">
+                            <div className="flex items-center justify-between p-4 bg-darkgreen/5 rounded-2xl">
+                                <span className="text-sm uppercase tracking-wider font-medium opacity-60">Sound Settings</span>
+                                <SoundToggle />
+                            </div>
+                            <Link
+                                href={'/'}
+                                onClick={toggleMenu}
+                                className='bg-darkgreen text-milk text-center font-medium rounded-2xl py-5 text-xl shadow-xl shadow-darkgreen/20'
+                            >
+                                Join the Movement
+                            </Link>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </motion.header>
     )
 }
