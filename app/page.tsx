@@ -1,6 +1,8 @@
 "use client";
 
-export default function ComingSoon() {
+import "./coming_soon.css";
+
+export default function Page() {
   return (
     <>
       <main className="hero-container" id="main-content">
