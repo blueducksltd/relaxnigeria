@@ -3,42 +3,16 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
-import { motion } from 'motion/react'
-
-const items = [
-    { id: 1, text: "Vote APC 2027", color: "text-lightgreen" },
-    { id: 2, text: "Vote Tinubu 2027.", color: "text-white" },
-]
+import BannerRight from './BannerRight'
 
 const Footer = () => {
-    const duplicatedItems = [...items, ...items, ...items];
     return (
-        <main className="">
+        <main className="overflow-x-hidden">
             {/* Banner Right */}
-            <main className='-skew-y-2 md:-skew-y-3 select-none'>
-                <section className='w-full py-5 md:py-7 bg-darkgreen flex items-center'>
-                    <motion.div
-                        className='flex items-center gap-x-5 whitespace-nowrap px-6'
-                        animate={{ x: ["0%", "-50%"] }}
-                        transition={{
-                            ease: "linear",
-                            duration: 10,
-                            repeat: Infinity,
-                        }}
-                    >
-                        {duplicatedItems.map((item, index) => (
-                            <div key={index} className="flex items-center gap-x-5">
-                                <p className={`${item.color} text-lg md:text-2xl font-bold uppercase tracking-wider`}>
-                                    {item.text}
-                                </p>
-                            </div>
-                        ))}
-                    </motion.div>
-                </section>
-            </main>
+            <BannerRight />
 
             <footer className='bg-white mt-20 md:mt-44 mb-10 md:mb-20 rounded-b-[40px] md:rounded-b-[100px] p-6 md:p-20'>
-                <section className='bg-[url(/footerbg.png)] bg-cover p-8 md:p-24 rounded-3xl md:rounded-4xl flex flex-col lg:flex-row justify-between items-center gap-10 md:gap-16'>
+                <section className='bg-[url(/footerbg.png)] bg-cover bg-center p-8 md:p-24 rounded-3xl md:rounded-4xl flex flex-col lg:flex-row justify-between items-center gap-10 md:gap-16'>
                     <div className='flex flex-col text-center lg:text-left'>
                         <h3 className='text-[#FBFFDD] text-2xl md:text-3xl md:max-w-lg font-medium leading-tight'>Join the movement shaping Nigeria’s future 🇳🇬✨</h3>
                         <p className='text-base md:text-lg font-light text-white max-w-xl mt-5'>Support the Renewed Hope vision of Bola Ahmed Tinubu. Register today and donate to help us reach more communities and build a stronger nation together</p>

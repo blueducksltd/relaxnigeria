@@ -58,9 +58,9 @@ const page = () => {
         <p className='font-laybar text-4xl md:text-6xl mt-2 text-darkgreen'>The regime we <br className="hidden md:block" /> love</p>
 
         <div className='flex flex-col lg:flex-row gap-5 lg:gap-8 items-center lg:items-end justify-center mt-10'>
-          <div className='w-full max-w-[401px] aspect-401/600 bg-lightgreen rounded-[40px] md:rounded-[56px] bg-[url(/president2.jpg)] bg-center bg-cover shadow-xl'></div>
-          <div className='w-full max-w-[600px] aspect-600/500 bg-lightgreen rounded-[40px] md:rounded-[56px] bg-[url(/leaders.png)] bg-center bg-cover shadow-xl'></div>
-          <div className='w-full max-w-[401px] aspect-401/600 bg-lightgreen rounded-[40px] md:rounded-[56px] bg-[url(/vice.png)] bg-center bg-cover shadow-xl'></div>
+          <div className='w-full max-w-[401px] aspect-401/600 bg-lightgreen rounded-[40px] md:rounded-[56px] bg-[url(/president2.jpg)] bg-center bg-cover'></div>
+          <div className='w-full max-w-[600px] aspect-600/500 bg-lightgreen rounded-[40px] md:rounded-[56px] bg-[url(/leaders.png)] bg-center bg-cover'></div>
+          <div className='w-full max-w-[401px] aspect-401/600 bg-lightgreen rounded-[40px] md:rounded-[56px] bg-[url(/vice.png)] bg-center bg-cover'></div>
         </div>
       </section>
 

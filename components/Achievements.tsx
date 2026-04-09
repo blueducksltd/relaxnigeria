@@ -3,13 +3,13 @@ import { motion } from 'motion/react'
 
 const Achievements = () => {
     return (
-        <main className='px-6 md:px-20 bg-darkgreen py-20 md:py-24 my-10 md:my-20 rounded-[40px] md:rounded-[100px] overflow-hidden'>
+        <main className='px-6 md:px-20 bg-darkgreen pt-20 md:py-24 my-10 md:my-20 rounded-[40px] md:rounded-[100px] overflow-hidden'>
             <section className='flex flex-col mb-10 md:mb-16'>
                 <h2 className='text-sm md:text-lg text-lightgreen font-normal'>What has this Government done?</h2>
-                <p className='font-laybar text-5xl md:text-7xl mt-4 text-milk text-left'>Tinubu&apos;s <br /> Achievements</p>
+                <p className='font-laybar text-3xl md:text-7xl mt-4 text-milk text-left'>Tinubu&apos;s <br /> Achievements</p>
             </section>
 
-            <section className='flex flex-col lg:flex-row items-center lg:items-end lg:-mt-36 lg:px-10 gap-8 lg:gap-0 pb-10'>
+            <section className='flex flex-col lg:flex-row items-center justify-center lg:items-end lg:-mt-36 lg:px-10 gap-8 lg:gap-0 pb-10'>
                 {/* Card 1 */}
                 <motion.div
                     initial={{ opacity: 0, y: 50 }}
