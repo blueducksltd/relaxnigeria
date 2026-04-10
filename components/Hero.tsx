@@ -67,7 +67,7 @@ const Hero = () => {
 
                 <div className='flex flex-col gap-5 text-center lg:text-left'>
                     <h2 className='font-laybar text-5xl md:text-8xl lg:w-lg text-darkgreen'>Relax Tinubu is Fixing Nigeria</h2>
-                    <p className='md:w-120 mx-auto lg:mx-0 text-sm md:text-base'>Hope is rising, progress is unfolding. Stand with Bola Ahmed Tinubu in 2027 to continue building a stronger, united Nigeria for all — Relax Tinubu Is Fixing Nigeria today.!!!</p>
+                    <p className='md:w-120 mx-auto lg:mx-0 text-sm md:text-base'>Hope is rising, progress is unfolding. Stand with Bola Ahmed Tinubu in 2027 to continue building a stronger, united Nigeria for all — Relax Tinubu Is Fixing Nigeria Enugu Chapter.!!!</p>
 
                     <div className='flex flex-wrap items-center justify-center lg:justify-start gap-4 md:gap-5 mt-4'>
                         <button className='bg-brown text-black px-8 md:px-12 py-3 rounded-full hover:scale-105 transition-transform w-full sm:w-auto'>Donate</button>

@@ -6,12 +6,12 @@ import React from 'react'
 const items = [
     {
         title: 'Our Vision',
-        content: 'External foreign reserves surged from about $3.99 billion in 2023 to over $23 billion by end of 2024, strengthening Nigeria’s cash buffer and investor confidence. Over $50 billion in new FDI commitments were unlocked alongside $8 billion in oil and gas investments. GDP growth hit around 3.8%–4.2%, with the World Bank projecting continued growth in 2026.'
+        content: 'To build a strong and united grassroots movement that inspires Nigerians across all regions to believe in sustainable development, national unity, and inclusive growth. RTIFN envisions a Nigeria where citizens actively support policies that drive economic prosperity, social stability, and long-term progress under the leadership of Bola Ahmed Tinubu. 🇳🇬✨ Through collective engagement, we aim to nurture hope, encourage participation, and contribute to a brighter future for all Nigerians.'
     },
 
     {
         title: 'Our Mission',
-        content: 'External foreign reserves surged from about $3.99 billion in 2023 to over $23 billion by end of 2024, strengthening Nigeria’s cash buffer and investor confidence. Over $50 billion in new FDI commitments were unlocked alongside $8 billion in oil and gas investments. GDP growth hit around 3.8%–4.2%, with the World Bank projecting continued growth in 2026.'
+        content: 'Our mission is to mobilize and empower citizens at the grassroots level by promoting awareness, engagement, and participation in nation-building. RTIFN works to educate communities on government initiatives, highlight developmental achievements, and create platforms for dialogue and advocacy. We seek to encourage volunteerism, strengthen voter education, and foster unity among diverse groups while supporting continuity of progressive policies. Through outreach programs, events, and strategic communication, we aim to inspire Nigerians to actively contribute to building a stronger, more prosperous, and forward-looking nation.'
     }
 ]
 

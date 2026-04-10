@@ -27,8 +27,7 @@ const Stakeholders = () => {
                         <div className='w-56 md:w-xl h-14 md:h-36 bg-lightgreen rounded-full flex flex-col items-start justify-center pl-4 md:pl-7 shrink-0 shadow-lg'>
                             <p className='font-bold text-[10px] md:text-lg text-black'>Oluwaseyi Abiodun Tinubu</p>
                             <p className='text-[8px] md:text-sm text-black'>(Seyi Tinubu)</p>
-                            <p className='text-[7px] md:text-sm text-black mt-0.5'>Òkanlòmọ of Yorubaland’</p>
-                            <p className='text-[7px] md:text-sm text-black mt-0.5'>Director General RTFIN</p>
+                            <p className='text-[7px] md:text-sm text-black mt-0.5'>Founder-in-Chief RTFIN</p>
                         </div>
                     </div>
 

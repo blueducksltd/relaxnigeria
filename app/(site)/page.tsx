@@ -62,6 +62,12 @@ const page = () => {
           <div className='w-full max-w-[600px] aspect-600/500 bg-lightgreen rounded-[40px] md:rounded-[56px] bg-[url(/leaders.png)] bg-center bg-cover'></div>
           <div className='w-full max-w-[401px] aspect-401/600 bg-lightgreen rounded-[40px] md:rounded-[56px] bg-[url(/vice.png)] bg-center bg-cover'></div>
         </div>
+
+        <div className='flex flex-col lg:flex-row gap-5 lg:gap-8 items-center lg:items-end justify-center mt-7'>
+          <div className='w-full max-w-[600px] aspect-600/500 bg-lightgreen rounded-[40px] md:rounded-[56px] bg-[url(/seyi.png)] bg-center bg-cover'></div>
+          <div className='w-full max-w-[600px] aspect-600/500 bg-lightgreen rounded-[40px] md:rounded-[56px] bg-[url(/bala.png)] bg-center bg-cover'></div>
+          <div className='w-full max-w-[600px] aspect-600/500 bg-lightgreen rounded-[40px] md:rounded-[56px] bg-[url(/johnson.png)] bg-bottom bg-cover'></div>
+        </div>
       </section>
 
       {/* Relax */}

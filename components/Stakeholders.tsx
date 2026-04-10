@@ -25,11 +25,12 @@ const Stakeholders = () => {
                             </div>
                         </div>
 
-                        {/* Row 2 */}
                         <div className='flex items-center gap-3 md:gap-5 justify-center lg:justify-start'>
-                            <div className='w-14 h-14 md:w-36 md:h-36 bg-[#50755C] rounded-full shrink-0'></div>
-                            <div className='w-14 h-14 md:w-36 md:h-36 bg-[#2E7043] rounded-full shrink-0'></div>
-                            <div className='w-14 h-14 md:w-36 md:h-36 bg-[#50755C] rounded-full shrink-0'></div>
+                            <div className='w-40 md:w-80 h-14 md:h-36 bg-lightgreen rounded-full flex flex-col items-end justify-center pr-4 md:pr-7 shrink-0 shadow-lg'>
+                                <p className='font-medium text-[10px] md:text-lg text-black'>Hon. Ahmed Bala</p>
+                                <p className='text-[8px] md:text-sm text-black'>Director General RTFIN</p>
+                            </div>
+                            <div className='w-14 h-14 md:w-36 md:h-36 bg-[url(/bala.png)] bg-cover rounded-full shrink-0 shadow-lg border-2 border-milk/10'></div>
                             <div className='w-14 h-14 md:w-36 md:h-36 bg-[#2E7043] rounded-full shrink-0'></div>
                         </div>
 
@@ -39,8 +40,7 @@ const Stakeholders = () => {
                             <div className='w-40 md:w-80 h-14 md:h-36 bg-lightgreen rounded-full flex flex-col items-start justify-center pl-4 md:pl-7 shrink-0 shadow-lg'>
                                 <p className='font-medium text-[10px] md:text-lg text-black'>Oluwaseyi Abiodun Tinubu</p>
                                 <p className='text-[8px] md:text-sm text-black'>(Seyi Tinubu)</p>
-                                <p className='text-[8px] md:text-sm text-black'>Òkanlòmọ of Yorubaland’</p>
-                                <p className='text-[7px] md:text-sm text-black mt-0.5'>Director General RTFIN</p>
+                                <p className='text-[7px] md:text-sm text-black mt-0.5'>Founder-in-Chief RTFIN</p>
                             </div>
                             <div className='w-14 h-14 md:w-36 md:h-36 bg-[#2E7043] rounded-full shrink-0'></div>
                         </div>
