@@ -7,7 +7,7 @@ import BannerRight from './BannerRight'
 
 const Footer = () => {
     return (
-        <main className="overflow-x-hidden">
+        <main className="">
             {/* Banner Right */}
             <BannerRight />
 

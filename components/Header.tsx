@@ -5,12 +5,21 @@ import Link from 'next/link'
 import Image from 'next/image'
 import SoundToggle from './SoundToggle'
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'motion/react'
+import { usePathname } from 'next/navigation'
 
 const Header = () => {
     const [isVisible, setIsVisible] = useState(true)
     const [isScrolled, setIsScrolled] = useState(false)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const { scrollY } = useScroll()
+    const pathname = usePathname()
+
+    const navItems = [
+        { name: 'Works', href: '/' },
+        { name: 'About', href: '/about' },
+        { name: 'Event', href: '/event' },
+        { name: 'Gallery', href: '/gallery' },
+    ]
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         const previous = scrollY.getPrevious() ?? 0
@@ -64,18 +73,13 @@ const Header = () => {
                 {/* Desktop Menu */}
                 <div className='hidden lg:flex items-center gap-4 bg-white/40 p-1.5 rounded-full border border-darkgreen/5 backdrop-blur-sm shadow-sm'>
                     <ul className='flex items-center gap-2'>
-                        <li>
-                            <Link href={'/'} className='bg-lightgreen text-darkgreen font-medium rounded-full px-5 py-2.5 hover:scale-[1.02] active:scale-[0.98] transition-all inline-block'>Works</Link>
-                        </li>
-                        <li>
-                            <Link href={'/'} className='rounded-full px-5 py-2.5 hover:bg-darkgreen/5 transition-all inline-block'>About</Link>
-                        </li>
-                        <li>
-                            <Link href={'/'} className='rounded-full px-5 py-2.5 hover:bg-darkgreen/5 transition-all inline-block'>Event</Link>
-                        </li>
-                        <li>
-                            <Link href={'/'} className='rounded-full px-5 py-2.5 hover:bg-darkgreen/5 transition-all inline-block'>Gallery</Link>
-                        </li>
+                        {navItems.map((item, index) => (
+                            <li key={index}>
+                                <Link href={item.href} className={`${pathname === item.href ? 'bg-lightgreen text-darkgreen' : 'hover:bg-darkgreen/5'} rounded-full px-5 py-2.5 transition-all inline-block`}>
+                                    {item.name}
+                                </Link>
+                            </li>
+                        ))}
                     </ul>
                     <li className='h-8 w-px bg-darkgreen/10 mx-2 list-none' />
                     <div className='pr-4'>
@@ -118,18 +122,11 @@ const Header = () => {
                         className='lg:hidden fixed inset-0 bg-milk z-105 flex flex-col pt-32 px-6'
                     >
                         <ul className='flex flex-col gap-6 text-2xl font-laybar font-medium text-darkgreen'>
-                            <motion.li initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
-                                <Link href={'/'} onClick={toggleMenu} className="block py-2 border-b border-darkgreen/5">Works</Link>
-                            </motion.li>
-                            <motion.li initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.2 }}>
-                                <Link href={'/'} onClick={toggleMenu} className="block py-2 border-b border-darkgreen/5">About</Link>
-                            </motion.li>
-                            <motion.li initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.3 }}>
-                                <Link href={'/'} onClick={toggleMenu} className="block py-2 border-b border-darkgreen/5">Event</Link>
-                            </motion.li>
-                            <motion.li initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.4 }}>
-                                <Link href={'/'} onClick={toggleMenu} className="block py-2 border-b border-darkgreen/5">Gallery</Link>
-                            </motion.li>
+                            {navItems.map((item, index) => (
+                                <motion.li key={index} initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ delay: 0.1 }}>
+                                    <Link href={item.href} onClick={toggleMenu} className="block py-2 border-b border-darkgreen/5">{item.name}</Link>
+                                </motion.li>
+                            ))}
                         </ul>
 
                         <div className="mt-auto mb-10 flex flex-col gap-6">

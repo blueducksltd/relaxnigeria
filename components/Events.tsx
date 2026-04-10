@@ -7,7 +7,7 @@ const Events = () => {
         <main className='px-6 md:px-20 bg-[#FBFFDD] py-20 md:py-24 my-20 md:my-44 rounded-[40px] md:rounded-[100px] overflow-hidden'>
             <section className='flex flex-col sm:flex-row justify-between items-start sm:items-center mb-12 md:mb-16 gap-6'>
                 <div>
-                    <h2 className='text-sm md:text-lg text-black/60 font-medium uppercase tracking-wider'>Programs to attend</h2>
+                    <h2 className='text-sm md:text-lg text-black/60 font-medium'>Programs to attend</h2>
                     <p className='font-laybar text-5xl md:text-7xl mt-2 text-darkgreen'>Our Events</p>
                 </div>
 

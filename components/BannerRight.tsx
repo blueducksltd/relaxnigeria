@@ -13,7 +13,7 @@ const BannerRight = () => {
 
     return (
         <main className='-skew-y-2 md:-skew-y-3 select-none'>
-            <section className='w-full py-5 md:py-7 bg-darkgreen flex items-center'>
+            <section className='w-full py-5 md:py-7 bg-darkgreen flex items-center overflow-hidden'>
                 <motion.div
                     className='flex items-center gap-x-5 whitespace-nowrap px-6'
                     animate={{ x: ["0%", "-50%"] }}
