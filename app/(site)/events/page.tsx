@@ -1,8 +1,5 @@
-import Stakeholders from '@/components/about/Stakeholders'
 import BannerRight from '@/components/BannerRight'
 import Events from '@/components/events/Events'
-import Image from 'next/image'
-import React from 'react'
 
 const Page = () => {
     return (

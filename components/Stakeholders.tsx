@@ -18,7 +18,7 @@ const Stakeholders = () => {
                         <div className='flex items-center gap-3 md:gap-5 justify-center lg:justify-start'>
                             <div className='w-14 h-14 md:w-36 md:h-36 bg-[#2E7043] rounded-full shrink-0'></div>
                             <div className='w-14 h-14 md:w-36 md:h-36 bg-[url(/governor.png)] bg-cover rounded-full shrink-0 shadow-lg border-2 border-milk/10'></div>
-                            <div className='w-40 md:w-80 h-14 md:h-36 bg-lightgreen rounded-full flex flex-col items-start justify-center pl-4 md:pl-7 shrink-0 shadow-lg'>
+                            <div className='w-44 md:w-80 h-14 md:h-36 bg-lightgreen rounded-full flex flex-col items-start justify-center pl-4 md:pl-7 shrink-0 shadow-lg'>
                                 <p className='font-medium text-[10px] md:text-lg text-black'>Dr. Peter Ndubuisi Mbah</p>
                                 <p className='text-[8px] md:text-sm text-black'>Governor of Enugu State</p>
                                 <p className='text-[7px] md:text-sm text-black mt-0.5'>RTIFN Patron</p>
@@ -26,7 +26,17 @@ const Stakeholders = () => {
                         </div>
 
                         <div className='flex items-center gap-3 md:gap-5 justify-center lg:justify-start'>
-                            <div className='w-40 md:w-80 h-14 md:h-36 bg-lightgreen rounded-full flex flex-col items-end justify-center pr-4 md:pr-7 shrink-0 shadow-lg'>
+                            <div className='w-14 h-14 md:w-36 md:h-36 bg-[url(/seyi.png)] bg-cover rounded-full shrink-0 shadow-lg border-2 border-milk/10'></div>
+                            <div className='w-44 md:w-80 h-14 md:h-36 bg-lightgreen rounded-full flex flex-col items-start justify-center pl-4 md:pl-7 shrink-0 shadow-lg'>
+                                <p className='font-medium text-[10px] md:text-lg text-black'>Barr. Oluwaseyi Abiodun Tinubu</p>
+                                <p className='text-[8px] md:text-sm text-black'>(Seyi Tinubu)</p>
+                                <p className='text-[7px] md:text-sm text-black mt-0.5'>Founder-in-Chief RTFIN</p>
+                            </div>
+                            <div className='w-14 h-14 md:w-36 md:h-36 bg-[#2E7043] rounded-full shrink-0'></div>
+                        </div>
+
+                        <div className='flex items-center gap-3 md:gap-5 justify-center lg:justify-start'>
+                            <div className='w-44 md:w-80 h-14 md:h-36 bg-lightgreen rounded-full flex flex-col items-end justify-center pr-4 md:pr-7 shrink-0 shadow-lg'>
                                 <p className='font-medium text-[10px] md:text-lg text-black'>Hon. Ahmed Bala</p>
                                 <p className='text-[8px] md:text-sm text-black'>Director General RTFIN</p>
                             </div>
@@ -35,21 +45,12 @@ const Stakeholders = () => {
                         </div>
 
                         {/* Row 3 */}
-                        <div className='flex items-center gap-3 md:gap-5 justify-center lg:justify-start'>
-                            <div className='w-14 h-14 md:w-36 md:h-36 bg-[url(/seyi.png)] bg-cover rounded-full shrink-0 shadow-lg border-2 border-milk/10'></div>
-                            <div className='w-40 md:w-80 h-14 md:h-36 bg-lightgreen rounded-full flex flex-col items-start justify-center pl-4 md:pl-7 shrink-0 shadow-lg'>
-                                <p className='font-medium text-[10px] md:text-lg text-black'>Oluwaseyi Abiodun Tinubu</p>
-                                <p className='text-[8px] md:text-sm text-black'>(Seyi Tinubu)</p>
-                                <p className='text-[7px] md:text-sm text-black mt-0.5'>Founder-in-Chief RTFIN</p>
-                            </div>
-                            <div className='w-14 h-14 md:w-36 md:h-36 bg-[#2E7043] rounded-full shrink-0'></div>
-                        </div>
 
                         {/* Row 4 */}
                         <div className='flex items-center gap-3 md:gap-5 justify-center lg:justify-start'>
                             <div className='w-14 h-14 md:w-36 md:h-36 bg-[#50755C] rounded-full shrink-0'></div>
                             <div className='w-14 h-14 md:w-36 md:h-36 bg-[url(/johnson.png)] bg-cover rounded-full shrink-0 shadow-lg border-2 border-milk/10'></div>
-                            <div className='w-40 md:w-80 h-14 md:h-36 bg-lightgreen rounded-full flex flex-col items-start justify-center pl-4 md:pl-7 shrink-0 shadow-lg'>
+                            <div className='w-44 md:w-80 h-14 md:h-36 bg-lightgreen rounded-full flex flex-col items-start justify-center pl-4 md:pl-7 shrink-0 shadow-lg'>
                                 <p className='font-medium text-[10px] md:text-lg text-black'>Dr. Johnson Samuel Ani</p>
                                 <p className='text-[8px] md:text-sm text-black'>Majority Leader Enugu</p>
                                 <p className='text-[7px] md:text-sm text-black mt-0.5'>RTIFN Enugu Coordinator</p>

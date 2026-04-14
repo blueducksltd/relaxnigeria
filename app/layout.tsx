@@ -19,6 +19,8 @@ export const metadata: Metadata = {
   description: "Relax Tinubu Is Fixing Nigeria (RTIFN) is a grassroots group advancing the Renewed Hope Agenda, mobilizing communities to champion the vision of President Bola Ahmed Tinubu.",
 };
 
+import { AuthProvider } from "@/components/AuthProvider";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,9 +29,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${laybar.variable}`}>
       <body>
-        <SoundProvider>
-          {children}
-        </SoundProvider>
+        <AuthProvider>
+          <SoundProvider>
+            {children}
+          </SoundProvider>
+        </AuthProvider>
       </body>
     </html>
   );
