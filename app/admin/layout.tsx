@@ -7,6 +7,8 @@ import {
   Calendar,
   Image as ImageIcon,
   Users,
+  Users2,
+  Radio,
   LogOut,
   Menu,
   X,
@@ -20,6 +22,8 @@ const sidebarItems = [
   { name: "Dashboard", icon: LayoutDashboard, href: "/admin" },
   { name: "Events", icon: Calendar, href: "/admin/events" },
   { name: "Gallery", icon: ImageIcon, href: "/admin/gallery" },
+  { name: "Members", icon: Users2, href: "/admin/members" },
+  { name: "Broadcast", icon: Radio, href: "/admin/broadcast" },
   { name: "Admins", icon: Users, href: "/admin/users", superAdminOnly: true },
 ];
 

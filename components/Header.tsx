@@ -6,11 +6,17 @@ import Image from 'next/image'
 import SoundToggle from './SoundToggle'
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'motion/react'
 import { usePathname } from 'next/navigation'
+import JoinUsModal from './JoinUsModal'
+import { useSession } from 'next-auth/react'
 
 const Header = () => {
+    const { data: session } = useSession()
+    const user = session?.user as any
+    const isLoggedIn = !!session && user?.role === 'user'
     const [isVisible, setIsVisible] = useState(true)
     const [isScrolled, setIsScrolled] = useState(false)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [isJoinModalOpen, setIsJoinModalOpen] = useState(false)
     const { scrollY } = useScroll()
     const pathname = usePathname()
 
@@ -86,8 +92,15 @@ const Header = () => {
                         <SoundToggle />
                     </div>
                 </div>
-
-                <Link href={'/'} className='hidden lg:inline-block border-2 border-darkgreen text-darkgreen font-medium rounded-full px-7 py-2.5 hover:bg-darkgreen hover:text-white hover:shadow-lg hover:shadow-darkgreen/20 transition-all active:scale-95'>Join us</Link>
+                {isLoggedIn ? (
+                    <Link href="/dashboard" className="hidden lg:inline-block border-2 border-darkgreen bg-darkgreen text-white font-medium rounded-full px-7 py-2.5 hover:bg-darkgreen/90 hover:shadow-lg hover:shadow-darkgreen/20 transition-all active:scale-95">
+                        My Dashboard
+                    </Link>
+                ) : (
+                    <button onClick={() => setIsJoinModalOpen(true)} className='hidden lg:inline-block border-2 border-darkgreen text-darkgreen font-medium rounded-full px-7 py-2.5 hover:bg-darkgreen hover:text-white hover:shadow-lg hover:shadow-darkgreen/20 transition-all active:scale-95 cursor-pointer'>
+                        Join us
+                    </button>
+                )}
 
                 {/* Mobile Menu Toggle */}
                 <button
@@ -134,17 +147,31 @@ const Header = () => {
                                 <span className="text-sm uppercase tracking-wider font-medium opacity-60">Sound Settings</span>
                                 <SoundToggle />
                             </div>
-                            <Link
-                                href={'/'}
-                                onClick={toggleMenu}
-                                className='bg-darkgreen text-milk text-center font-medium rounded-2xl py-5 text-xl shadow-xl shadow-darkgreen/20'
-                            >
-                                Join the Movement
-                            </Link>
+                            {isLoggedIn ? (
+                                <Link
+                                    href="/dashboard"
+                                    onClick={toggleMenu}
+                                    className='bg-darkgreen text-milk text-center font-medium rounded-2xl py-5 text-xl shadow-xl shadow-darkgreen/20 block'
+                                >
+                                    My Dashboard
+                                </Link>
+                            ) : (
+                                <button
+                                    onClick={() => {
+                                        toggleMenu()
+                                        setIsJoinModalOpen(true)
+                                    }}
+                                    className='bg-darkgreen text-milk text-center font-medium rounded-2xl py-5 text-xl shadow-xl shadow-darkgreen/20 w-full cursor-pointer'
+                                >
+                                    Join the Movement
+                                </button>
+                            )}
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            <JoinUsModal isOpen={isJoinModalOpen} onClose={() => setIsJoinModalOpen(false)} />
         </motion.header>
     )
 }

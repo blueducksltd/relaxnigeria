@@ -6,7 +6,9 @@ export default withAuth(
     const token = req.nextauth.token;
     const isAuth = !!token;
     const isAdminPage = req.nextUrl.pathname.startsWith("/admin");
+    const isDashboardPage = req.nextUrl.pathname.startsWith("/dashboard");
     const isLoginPage = req.nextUrl.pathname === "/admin/login";
+    const isUserLoginPage = req.nextUrl.pathname === "/login";
 
     if (isAdminPage && !isLoginPage && !isAuth) {
       return NextResponse.redirect(new URL("/admin/login", req.url));
@@ -16,14 +18,17 @@ export default withAuth(
       return NextResponse.redirect(new URL("/admin", req.url));
     }
 
+    if (isDashboardPage && !isAuth) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+
     return NextResponse.next();
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // Just check if we are on the login page, then always true
         if (req.nextUrl.pathname === "/admin/login") return true;
-        // Otherwise require a token
+        if (req.nextUrl.pathname === "/login") return true;
         return !!token;
       },
     },
@@ -31,5 +36,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/dashboard/:path*"],
 };
