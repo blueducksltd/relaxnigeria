@@ -1,6 +1,10 @@
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { redirect } from "next/navigation";
 import dbConnect from "@/lib/mongodb";
 import Event from "@/models/Event";
 import GalleryItem from "@/models/GalleryItem";
+import MemberManagement from "@/components/MemberManagement";
 import {
   Calendar,
   Image as ImageIcon,
@@ -10,6 +14,16 @@ import {
 } from "lucide-react";
 
 export default async function AdminDashboard() {
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    redirect("/admin/login");
+  }
+
+  const userRole = (session.user as any).role;
+  if (userRole !== "admin" && userRole !== "super-admin") {
+    redirect("/login");
+  }
   await dbConnect();
 
   // Get counts

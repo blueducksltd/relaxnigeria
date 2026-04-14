@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import { list } from "@vercel/blob";
-import { getIdCardUrl, storeIdCardUrl } from "@/lib/id-card-storage";
+import { getIdCardUrls, storeIdCardUrls } from "@/lib/id-card-storage";
 
+// Force a rebuild with a comment
 export async function GET(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -20,16 +21,13 @@ export async function GET(req: Request) {
     }
 
     // First, try to get from our database
-    const storedCard = getIdCardUrl(memberId);
+    const storedUrls = await getIdCardUrls(memberId);
     
-    if (storedCard) {
+    if (storedUrls && storedUrls.frontUrl) {
       return NextResponse.json({
         success: true,
         memberId,
-        blobUrl: storedCard.blobUrl,
-        filename: storedCard.filename,
-        createdAt: storedCard.createdAt,
-        photoUrl: storedCard.photoUrl,
+        ...storedUrls,
         source: "database"
       });
     }
@@ -40,25 +38,26 @@ export async function GET(req: Request) {
         prefix: `id-cards/${memberId}-`,
       });
 
-      if (blobs.blobs.length > 0) {
-        // Get the most recent blob for this member
-        const latestBlob = blobs.blobs.reduce((latest, blob) => {
-          return new Date(blob.uploadedAt) > new Date(latest.uploadedAt) ? blob : latest;
-        });
+      if (blobs.blobs.length >= 2) {
+        // Find latest front and back
+        const frontBlobs = blobs.blobs.filter(b => b.pathname.includes('-front-'));
+        const backBlobs = blobs.blobs.filter(b => b.pathname.includes('-back-'));
 
-        // Store in database for future quick access
-        storeIdCardUrl(memberId, latestBlob.url, latestBlob.pathname);
+        if (frontBlobs.length > 0 && backBlobs.length > 0) {
+            const latestFront = frontBlobs.reduce((l, b) => new Date(b.uploadedAt) > new Date(l.uploadedAt) ? b : l);
+            const latestBack = backBlobs.reduce((l, b) => new Date(b.uploadedAt) > new Date(l.uploadedAt) ? b : l);
 
-        const storedData = getIdCardUrl(memberId);
-        return NextResponse.json({
-          success: true,
-          memberId,
-          blobUrl: latestBlob.url,
-          filename: latestBlob.pathname,
-          createdAt: latestBlob.uploadedAt,
-          photoUrl: storedData?.photoUrl,
-          source: "vercel-blob"
-        });
+            // Sync to database
+            await storeIdCardUrls(memberId, latestFront.url, latestBack.url);
+
+            return NextResponse.json({
+                success: true,
+                memberId,
+                frontUrl: latestFront.url,
+                backUrl: latestBack.url,
+                source: "vercel-blob-sync"
+            });
+        }
       }
     } catch (blobError) {
       console.error("Error listing blobs:", blobError);

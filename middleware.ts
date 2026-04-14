@@ -5,21 +5,36 @@ export default withAuth(
   function middleware(req) {
     const token = req.nextauth.token;
     const isAuth = !!token;
-    const isAdminPage = req.nextUrl.pathname.startsWith("/admin");
-    const isDashboardPage = req.nextUrl.pathname.startsWith("/dashboard");
-    const isLoginPage = req.nextUrl.pathname === "/admin/login";
-    const isUserLoginPage = req.nextUrl.pathname === "/login";
+    const pathname = req.nextUrl.pathname.replace(/\/$/, "");
+    const isAdminPage = pathname.startsWith("/admin");
+    const isDashboardPage = pathname.startsWith("/dashboard");
+    const isLoginPage = pathname === "/admin/login";
+    const isUserLoginPage = pathname === "/login";
+    const userRole = token?.role as string;
+    const isAnyAdmin = userRole === "admin" || userRole === "super-admin";
 
-    if (isAdminPage && !isLoginPage && !isAuth) {
-      return NextResponse.redirect(new URL("/admin/login", req.url));
+    // Role-based access control
+    if (isAdminPage && !isLoginPage) {
+      if (!isAuth) {
+        return NextResponse.redirect(new URL("/admin/login", req.url));
+      }
+      if (userRole && !isAnyAdmin) {
+        return NextResponse.redirect(new URL("/login", req.url));
+      }
+    }
+
+    if (isDashboardPage) {
+      if (!isAuth) {
+        return NextResponse.redirect(new URL("/login", req.url));
+      }
+      // Redirect admins to admin dashboard
+      if (isAnyAdmin) {
+        return NextResponse.redirect(new URL("/admin", req.url));
+      }
     }
 
     if (isLoginPage && isAuth) {
       return NextResponse.redirect(new URL("/admin", req.url));
-    }
-
-    if (isDashboardPage && !isAuth) {
-      return NextResponse.redirect(new URL("/login", req.url));
     }
 
     return NextResponse.next();
@@ -27,8 +42,8 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        if (req.nextUrl.pathname === "/admin/login") return true;
-        if (req.nextUrl.pathname === "/login") return true;
+        const path = req.nextUrl.pathname.replace(/\/$/, "");
+        if (path === "/admin/login" || path === "/login") return true;
         return !!token;
       },
     },
@@ -36,5 +51,5 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/admin/:path*", "/dashboard/:path*"],
+  matcher: ["/admin/:path*", "/dashboard/:path*", "/login"],
 };

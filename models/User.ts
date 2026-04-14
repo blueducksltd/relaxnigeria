@@ -12,6 +12,9 @@ const UserSchema = new Schema(
     lga: { type: String, required: true },
     ward: { type: String, required: true },
     role: { type: String, default: "user" },
+    idCardFrontUrl: { type: String },
+    idCardBackUrl: { type: String },
+    idCardUpdatedAt: { type: Date },
   },
   { timestamps: true }
 );

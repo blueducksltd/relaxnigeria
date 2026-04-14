@@ -19,7 +19,7 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await signIn("credentials", {
+      const res = await signIn("admin-login", {
         email,
         password,
         redirect: false,
@@ -28,8 +28,11 @@ export default function LoginPage() {
       if (res?.error) {
         setError("Invalid email or password");
       } else {
-        router.push("/admin");
-        router.refresh();
+        // Wait a moment for session to be established
+        setTimeout(() => {
+          router.push("/admin");
+          router.refresh();
+        }, 100);
       }
     } catch (err) {
       setError("An unexpected error occurred");

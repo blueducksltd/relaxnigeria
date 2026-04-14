@@ -59,7 +59,8 @@ export default function AdminLayout({
   }, [pathname, isMobile]);
 
   // Don't show layout on login page
-  if (pathname === "/admin/login") {
+  const normalizedPath = pathname.replace(/\/$/, "");
+  if (normalizedPath === "/admin/login") {
     return <>{children}</>;
   }
 

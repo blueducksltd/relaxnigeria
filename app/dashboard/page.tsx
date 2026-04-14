@@ -19,6 +19,19 @@ interface Message {
 
 export default function UserDashboard() {
     const { data: session, status } = useSession()
+    
+    // Client-side role check (with delay to allow middleware to handle)
+    useEffect(() => {
+        const userRole = (session?.user as any)?.role;
+        if (status === 'authenticated' && session?.user && (userRole === 'admin' || userRole === 'super-admin')) {
+            // Give middleware priority to handle redirect
+            setTimeout(() => {
+                if (window.location.pathname === '/dashboard') {
+                    window.location.href = '/admin'
+                }
+            }, 500)
+        }
+    }, [status, session])
     const [messages, setMessages] = useState<Message[]>([])
     const [loadingMessages, setLoadingMessages] = useState(true)
     const [expandedMsg, setExpandedMsg] = useState<string | null>(null)
@@ -152,9 +165,24 @@ export default function UserDashboard() {
                 position: absolute;
                 inset: 0;
                 opacity: 0.1;
-                background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,0.1) 35px, rgba(255,255,255,0.1) 70px);
+                background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.15) 1px, transparent 0);
+                background-size: 15px 15px;
             `
             tempDiv.appendChild(patternDiv)
+
+            // Add background logo touch design (watermark)
+            const watermarkMsg = document.createElement('div')
+            watermarkMsg.style.cssText = `
+                position: absolute;
+                right: -20px;
+                bottom: -20px;
+                width: 150px;
+                height: 150px;
+                opacity: 0.15;
+                pointer-events: none;
+            `
+            watermarkMsg.innerHTML = '<img src="/rtifn.png" style="width: 100%; height: 100%; object-fit: contain; transform: rotate(-15deg);" />'
+            tempDiv.appendChild(watermarkMsg)
             
             // Add content based on memberData
             const contentDiv = document.createElement('div')
@@ -177,8 +205,8 @@ export default function UserDashboard() {
             
             const logoDiv = document.createElement('div')
             logoDiv.style.cssText = `
-                width: 48px;
-                height: 48px;
+                width: 44px;
+                height: 44px;
                 background: white;
                 border-radius: 8px;
                 display: flex;
@@ -186,15 +214,15 @@ export default function UserDashboard() {
                 justify-content: center;
                 padding: 4px;
                 box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                overflow: hidden;
             `
-            logoDiv.innerHTML = '<div style="font-size: 8px; font-weight: bold; color: #059669;">RTFIN</div>'
+            logoDiv.innerHTML = '<img src="/Renewed Hope.jpg" style="width: 100%; height: 100%; object-fit: contain;" />'
             leftSection.appendChild(logoDiv)
             
             const orgInfo = document.createElement('div')
             orgInfo.innerHTML = `
-                <div style="font-size: 18px; font-weight: bold; margin-bottom: 4px;">RTFIN</div>
-                <div style="font-size: 12px; opacity: 0.8;">Member ID Card</div>
-                <div style="font-size: 12px; opacity: 0.6; font-family: monospace;">${memberData.memberId}</div>
+                <div style="font-size: 16px; font-weight: 900; letter-spacing: -0.5px; text-transform: uppercase;">Relax Nigeria</div>
+                <div style="font-size: 7px; opacity: 0.7; letter-spacing: 2px; text-transform: uppercase; font-weight: bold;">Official Member</div>
             `
             leftSection.appendChild(orgInfo)
             contentDiv.appendChild(leftSection)
@@ -202,20 +230,21 @@ export default function UserDashboard() {
             // Right section (photo)
             const photoDiv = document.createElement('div')
             photoDiv.style.cssText = `
-                width: 64px;
-                height: 64px;
-                background: rgba(255,255,255,0.2);
-                border-radius: 8px;
+                width: 60px;
+                height: 60px;
+                background: rgba(255,255,255,0.1);
+                border-radius: 10px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                border: 2px solid rgba(255,255,255,0.3);
+                border: 2px solid rgba(255,255,255,0.2);
                 backdrop-filter: blur(4px);
+                overflow: hidden;
             `
             if (memberData.photo) {
-                photoDiv.innerHTML = `<img src="${memberData.photo}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 6px;" />`
+                photoDiv.innerHTML = `<img src="${memberData.photo}" style="width: 100%; height: 100%; object-fit: cover;" />`
             } else {
-                photoDiv.innerHTML = '<div style="font-size: 24px; opacity: 0.6;">ð</div>'
+                photoDiv.innerHTML = '<div style="font-size: 24px; opacity: 0.3;">👤</div>'
             }
             contentDiv.appendChild(photoDiv)
             tempDiv.appendChild(contentDiv)
@@ -225,15 +254,19 @@ export default function UserDashboard() {
             middleDiv.style.cssText = `
                 position: relative;
                 z-index: 1;
-                padding: 8px 0;
+                margin-top: 4px;
             `
             middleDiv.innerHTML = `
-                <div style="font-size: 14px; font-weight: bold; margin-bottom: 4px;">${memberData.firstName} ${memberData.lastName}</div>
-                <div style="font-size: 11px; line-height: 1.4; opacity: 0.9;">
-                    <div>ð ${memberData.email}</div>
-                    <div>â° ${memberData.phone}</div>
-                    <div>ð ${memberData.ward}, ${memberData.lga}</div>
-                    <div>â VIN: ${memberData.votersCard}</div>
+                <div style="font-size: 14px; font-weight: 800; color: #fbbf24; margin-bottom: 2px;">${memberData.firstName} ${memberData.lastName}</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 8px; opacity: 0.9;">
+                    <div>
+                        <div style="opacity: 0.6; text-transform: uppercase; font-size: 6px;">ID Number</div>
+                        <div style="font-family: monospace; font-weight: bold;">${memberData.memberId}</div>
+                    </div>
+                    <div>
+                        <div style="opacity: 0.6; text-transform: uppercase; font-size: 6px;">Joined</div>
+                        <div>${memberData.memberSince}</div>
+                    </div>
                 </div>
             `
             tempDiv.appendChild(middleDiv)
@@ -243,16 +276,16 @@ export default function UserDashboard() {
             bottomDiv.style.cssText = `
                 position: relative;
                 z-index: 1;
-                padding-top: 8px;
-                border-top: 1px solid rgba(255,255,255,0.2);
+                padding-top: 6px;
+                border-top: 1px solid rgba(255,255,255,0.1);
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
-                font-size: 11px;
+                font-size: 8px;
             `
             bottomDiv.innerHTML = `
-                <div style="opacity: 0.8;">ð Since: ${memberData.memberSince}</div>
-                <div style="opacity: 0.6;">Valid Member</div>
+                <div style="opacity: 0.8;">📍 ${memberData.ward}, ${memberData.lga}</div>
+                <div style="background: #fbbf24; color: #064e3b; font-weight: 800; padding: 1px 6px; border-radius: 100px; text-transform: uppercase; font-size: 6px;">Verified</div>
             `
             tempDiv.appendChild(bottomDiv)
             
@@ -279,7 +312,8 @@ export default function UserDashboard() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     memberId: memberData.memberId,
-                    imageData: imageData
+                    frontImage: imageData,     // Updated to match new API
+                    backImage: imageData       // Using front as back for auto-save purposes
                 }),
             })
             

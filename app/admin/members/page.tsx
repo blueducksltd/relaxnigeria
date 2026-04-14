@@ -1,7 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { motion } from 'motion/react'
-import { Users, Search, MapPin, Phone, Mail, CreditCard, Calendar } from 'lucide-react'
+import { Users, Search, MapPin, Phone, Mail, CreditCard, Calendar, Trash2, Loader2, AlertTriangle } from 'lucide-react'
+import { useSession } from 'next-auth/react'
 
 interface Member {
     _id: string
@@ -17,17 +18,53 @@ interface Member {
 }
 
 export default function AdminMembersPage() {
+    const { data: session } = useSession()
     const [members, setMembers] = useState<Member[]>([])
     const [loading, setLoading] = useState(true)
+    const [deletingId, setDeletingId] = useState<string | null>(null)
     const [search, setSearch] = useState('')
     const [stateFilter, setStateFilter] = useState('all')
 
-    useEffect(() => {
+    const userRole = (session?.user as any)?.role
+    const isSuperAdmin = userRole === 'super-admin'
+
+    const fetchMembers = () => {
+        setLoading(true)
         fetch('/api/members')
             .then(r => r.json())
-            .then(data => { setMembers(Array.isArray(data) ? data : []); setLoading(false) })
+            .then(data => {
+                const membersList = data.members || [];
+                setMembers(Array.isArray(membersList) ? membersList : []);
+                setLoading(false);
+            })
             .catch(() => setLoading(false))
+    }
+
+    useEffect(() => {
+        fetchMembers()
     }, [])
+
+    const handleDelete = async (id: string, name: string) => {
+        if (!confirm(`Are you sure you want to delete ${name}? This action cannot be undone.`)) return
+
+        setDeletingId(id)
+        try {
+            const res = await fetch(`/api/admin/delete-member?memberId=${id}`, {
+                method: 'DELETE'
+            })
+            const data = await res.json()
+
+            if (res.ok) {
+                setMembers(prev => prev.filter(m => m._id !== id))
+            } else {
+                alert(data.error || 'Failed to delete member')
+            }
+        } catch (err) {
+            alert('An unexpected error occurred')
+        } finally {
+            setDeletingId(null)
+        }
+    }
 
     const filtered = members.filter(m => {
         const q = search.toLowerCase()
@@ -77,13 +114,29 @@ export default function AdminMembersPage() {
                     {filtered.map((member, i) => (
                         <motion.div key={member._id}
                             initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                            className="bg-white rounded-2xl p-5 border border-darkgreen/5 shadow-sm hover:shadow-md transition-all"
+                            className="bg-white rounded-2xl p-5 border border-darkgreen/5 shadow-sm hover:shadow-md transition-all relative overflow-hidden group"
                         >
+                            {/* Actions Overlay */}
+                            {isSuperAdmin && (
+                                <button
+                                    onClick={() => handleDelete(member._id, `${member.firstName} ${member.lastName}`)}
+                                    disabled={deletingId === member._id}
+                                    className="absolute top-4 right-4 p-2 rounded-lg bg-red-50 text-red-500 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-500 hover:text-white disabled:opacity-50"
+                                    title="Delete Member"
+                                >
+                                    {deletingId === member._id ? (
+                                        <Loader2 className="w-4 h-4 animate-spin" />
+                                    ) : (
+                                        <Trash2 className="w-4 h-4" />
+                                    )}
+                                </button>
+                            )}
+
                             <div className="flex items-center gap-3 mb-4">
                                 <div className="w-10 h-10 rounded-full bg-darkgreen flex items-center justify-center text-white font-bold text-sm shrink-0">
                                     {member.firstName[0]}{member.lastName[0]}
                                 </div>
-                                <div className="min-w-0">
+                                <div className="min-w-0 pr-8">
                                     <p className="font-bold text-darkgreen text-sm truncate">{member.firstName} {member.lastName}</p>
                                     <p className="text-xs text-darkgreen/40 flex items-center gap-1">
                                         <MapPin className="w-3 h-3" />{member.state} · {member.lga}
