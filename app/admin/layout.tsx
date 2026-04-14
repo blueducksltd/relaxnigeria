@@ -80,9 +80,9 @@ export default function AdminLayout({
       <AnimatePresence mode="wait">
         {(isSidebarOpen || !isMobile) && (
           <motion.aside
-            initial={isMobile ? { x: -280 } : false}
+            initial={isMobile ? { x: -280 } : undefined}
             animate={{ x: 0 }}
-            exit={isMobile ? { x: -280 } : false}
+            exit={isMobile ? { x: -280 } : undefined}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
             className={`fixed inset-y-0 left-0 w-72 bg-darkgreen border-r border-darkgreen/10 z-50 flex flex-col ${!isSidebarOpen && !isMobile ? "hidden" : ""
               }`}
