@@ -2,6 +2,7 @@
 import React, { useRef, useState } from 'react';
 import { Download, Shield, Calendar, MapPin, Phone, User, RefreshCw, CheckCircle2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface MemberIDCardProps {
@@ -41,7 +42,9 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
             height: 2.125in;
             background: linear-gradient(135deg, ${colors.primary}, ${colors.secondary});
             border-radius: 12px;
-            position: relative;
+            position: fixed;
+            top: -9999px;
+            left: -9999px;
             overflow: hidden;
             display: flex;
             flex-direction: column;
@@ -67,7 +70,7 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
                     <div style="display: flex; justify-content: space-between; align-items: flex-start;">
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div style="width: 40px; height: 40px; background: white; border-radius: 8px; padding: 4px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2);">
-                                <img src="/RTIFN Logo.jpg" style="width: 100%; height: 100%; object-fit: contain;" />
+                                <div style="width: 100%; height: 100%; background-image: url('/Renewed Hope.jpg'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
                             </div>
                             <div>
                                 <div style="font-size: 16px; font-weight: 800; letter-spacing: 0.5px;">RELAX NIGERIA</div>
@@ -75,7 +78,7 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
                             </div>
                         </div>
                         <div style="width: 60px; height: 60px; border: 2px solid ${colors.glassBorder}; border-radius: 10px; overflow: hidden; background: ${colors.glass}; backdrop-filter: blur(4px);">
-                            ${memberData.photo ? `<img src="${memberData.photo}" style="width: 100%; height: 100%; object-fit: cover;" />` : `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0.5;">👤</div>`}
+                            ${memberData.photo ? `<div style="width: 100%; height: 100%; background-image: url('${memberData.photo}'); background-size: cover; background-position: center;"></div>` : `<div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; opacity: 0.5;">👤</div>`}
                         </div>
                     </div>
                     
@@ -97,7 +100,7 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
                         <div style="display: flex; align-items: center; gap: 4px; opacity: 0.8;">
                             <span>📍 ${memberData.ward}, ${memberData.lga}, ${memberData.state}</span>
                         </div>
-                        <div style="background: ${colors.accent}; color: ${colors.primary}; font-weight: 800; padding: 2px 8px; border-radius: 100px; text-transform: uppercase; font-size: 7px;">Active Member</div>
+                        <div style="background: ${colors.accent}; color: ${colors.primary}; font-weight: 900; height: 14px; padding: 0 10px; border-radius: 100px; display: flex; align-items: center; justify-content: center; text-transform: uppercase; font-size: 6.5px; line-height: 1;">Active Member</div>
                     </div>
                 </div>
             `;
@@ -108,7 +111,7 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
                     <div style="width: 100%; height: 20px; background: rgba(0,0,0,0.3); position: absolute; top: 15px; left: 0;"></div>
                     
                     <div style="background: white; padding: 8px; border-radius: 8px; margin-bottom: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://relaxnigeria.com" style="width: 70px; height: 70px;" />
+                        <div style="width: 70px; height: 70px; background-image: url('https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://relaxnigeria.com'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>
                     </div>
                     
                     <div style="font-size: 8px; opacity: 0.8; max-width: 200px;">
@@ -131,10 +134,164 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
         return div;
     };
 
+    const handleDownloadPDF = async () => {
+        setIsSaving(true);
+        try {
+            const doc = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: [85.6, 53.98],
+                compress: true
+            });
+
+            // --- FRONT SIDE ---
+            // Background
+            doc.setFillColor(6, 78, 59); // primary #064e3b
+            doc.rect(0, 0, 85.6, 53.98, 'F');
+            
+            // Orbs/Gradients simulation
+            doc.setFillColor(5, 150, 105); // secondary #059669
+            doc.circle(85.6, 0, 45, 'F');
+            doc.setFillColor(251, 191, 36); // accent #fbbf24
+            doc.setGState(new (doc as any).GState({ opacity: 0.15 }));
+            doc.circle(0, 53.98, 35, 'F');
+            doc.setGState(new (doc as any).GState({ opacity: 1.0 }));
+
+            // Logo Section
+            try {
+                const logoImg = new Image();
+                logoImg.src = '/Renewed Hope.jpg';
+                await new Promise((resolve) => { logoImg.onload = resolve; });
+                doc.setFillColor(255, 255, 255);
+                doc.roundedRect(6, 6, 14, 14, 3, 3, 'F');
+                doc.addImage(logoImg, 'JPEG', 6.5, 6.5, 13, 13, undefined, 'FAST');
+            } catch (e) { console.error('Logo failed', e); }
+
+            // Title Header
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.setFontSize(16);
+            doc.text('RELAX NIGERIA', 22, 11);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'bold');
+            doc.setTextColor(200, 200, 200);
+            doc.text('OFFICIAL MEMBERSHIP ID', 22, 15);
+
+            // Member Photo (Larger & Clearer)
+            if (memberData.photo) {
+                doc.setFillColor(255, 255, 255, 0.2);
+                doc.roundedRect(60, 6, 20, 20, 2, 2, 'F');
+                doc.addImage(memberData.photo, 'JPEG', 60.5, 6.5, 19, 19, undefined, 'MEDIUM');
+            }
+
+            // Member Name (Gold & Prominent)
+            doc.setTextColor(251, 191, 36); // accent
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`${memberData.firstName} ${memberData.lastName}`.toUpperCase(), 6, 32);
+
+            // ID Details Grid
+            doc.setTextColor(200, 200, 200);
+            doc.setFontSize(7);
+            doc.text('MEMBER ID', 6, 39);
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(9);
+            doc.text(memberData.memberId, 6, 43);
+
+            doc.setTextColor(200, 200, 200);
+            doc.setFontSize(7);
+            doc.text('JOINED', 35, 39);
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(9);
+            doc.text(memberData.memberSince, 35, 43);
+
+            // Location Footer
+            doc.setDrawColor(255, 255, 255, 0.15);
+            doc.line(6, 46, 80, 46);
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(7);
+            doc.text(`\u2022 ${memberData.ward}, ${memberData.lga}, ${memberData.state}`.toUpperCase(), 6, 50);
+            
+            // Member Badge
+            doc.setFillColor(251, 191, 36);
+            doc.roundedRect(66, 47, 14, 4, 1, 1, 'F');
+            doc.setTextColor(6, 78, 59);
+            doc.setFontSize(6);
+            doc.setFont('helvetica', 'bold');
+            doc.text('MEMBER', 69.5, 50);
+
+            // --- BACK SIDE ---
+            doc.addPage([85.6, 53.98], 'landscape');
+            doc.setFillColor(6, 78, 59);
+            doc.rect(0, 0, 85.6, 53.98, 'F');
+            
+            // Magnetic stripe simulation
+            doc.setFillColor(0, 0, 0, 0.4);
+            doc.rect(0, 5, 85.6, 9, 'F');
+
+            // QR Code (Centered & Balanced)
+            try {
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://relaxnigeria.com/verify/${memberData.memberId}`;
+                const qrImg = new Image();
+                qrImg.crossOrigin = "Anonymous";
+                qrImg.src = qrUrl;
+                await new Promise((resolve) => { qrImg.onload = resolve; });
+                doc.setFillColor(255, 255, 255);
+                doc.roundedRect(31, 18, 24, 24, 2, 2, 'F');
+                doc.addImage(qrImg, 'PNG', 33, 20, 20, 20);
+            } catch (e) { console.error('QR failed', e); }
+
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(8);
+            doc.setFont('helvetica', 'bold');
+            doc.text('RELAX NIGERIA INITIATIVE', 42.8, 44, { align: 'center' });
+            doc.setFontSize(6);
+            doc.setTextColor(200, 200, 200);
+            doc.setFont('helvetica', 'normal');
+            doc.text('Scan for official verification', 42.8, 47, { align: 'center' });
+
+            // Legal info
+            doc.setFontSize(5);
+            doc.text(`VIN: ${memberData.votersCard}`, 6, 50);
+            doc.text(`PHN: ${memberData.phone}`, 6, 52);
+            
+            doc.setDrawColor(255, 255, 255, 0.2);
+            doc.line(60, 50, 80, 50);
+            doc.text('AUTHORIZED SIGNATURE', 60, 52);
+
+            // Final Save
+            doc.save(`RelaxNigeria-ID-${memberData.memberId}.pdf`);
+            
+            // Cloud save handled separately to prevent failure blocking download
+            setTimeout(async () => {
+                try {
+                    const frontCanvas = await html2canvas(createSideForDownload(false), { scale: 2 });
+                    const backCanvas = await html2canvas(createSideForDownload(true), { scale: 2 });
+                    await fetch('/api/save-id-card', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            memberId: memberData.memberId,
+                            frontImage: frontCanvas.toDataURL('image/png'),
+                            backImage: backCanvas.toDataURL('image/png')
+                        })
+                    });
+                } catch (cloudErr) {
+                    console.error('Background cloud save failed', cloudErr);
+                }
+            }, 500);
+
+        } catch (error) {
+            console.error('PDF Generation failed:', error);
+            alert('Something went wrong during PDF generation. Please try again.');
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     const handleDownload = async () => {
         setIsSaving(true);
         try {
-            // Generate Canvases
             const frontDiv = createSideForDownload(false);
             document.body.appendChild(frontDiv);
             const frontCanvas = await html2canvas(frontDiv, { scale: 2, backgroundColor: null, useCORS: true });
@@ -148,26 +305,6 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
             const frontData = frontCanvas.toDataURL('image/png');
             const backData = backCanvas.toDataURL('image/png');
 
-            // 1. Save to Cloud (v2: permanent storage)
-            try {
-                const saveRes = await fetch('/api/save-id-card', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        memberId: memberData.memberId,
-                        frontImage: frontData,
-                        backImage: backData
-                    })
-                });
-                
-                if (!saveRes.ok) {
-                    console.error('Failed to save ID card to cloud');
-                }
-            } catch (saveError) {
-                console.error('Error saving to cloud:', saveError);
-            }
-
-            // 2. Trigger Downloads
             const downloadLink = (dataUrl: string, suffix: string) => {
                 const link = document.createElement('a');
                 link.download = `RelaxNigeria-ID-${memberData.memberId}-${suffix}.png`;
@@ -177,10 +314,9 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
 
             downloadLink(frontData, 'front');
             setTimeout(() => downloadLink(backData, 'back'), 500);
-
         } catch (error) {
             console.error('Generation failed:', error);
-            alert('Failed to generate ID card. Please try again.');
+            alert('Failed to generate ID card image.');
         } finally {
             setIsSaving(false);
         }
@@ -189,28 +325,28 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
     return (
         <div className="w-full flex flex-col items-center">
             {/* Perspective Container for Flip */}
-            <div className="relative group cursor-pointer" 
-                 style={{ perspective: '1000px', width: '3.375in', height: '2.125in' }}
-                 onClick={() => setIsFlipped(!isFlipped)}>
-                
+            <div className="relative group cursor-pointer"
+                style={{ perspective: '1000px', width: '3.375in', height: '2.125in' }}
+                onClick={() => setIsFlipped(!isFlipped)}>
+
                 <motion.div
                     animate={{ rotateY: isFlipped ? 180 : 0 }}
                     transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-                    style={{ 
-                        transformStyle: 'preserve-3d', 
-                        width: '100%', 
+                    style={{
+                        transformStyle: 'preserve-3d',
+                        width: '100%',
                         height: '100%',
                         position: 'relative'
                     }}
                 >
                     {/* Front Side */}
-                    <div className="absolute inset-0 backface-hidden rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-[#064e3b] via-[#059669] to-[#047857]"
-                         style={{ backfaceVisibility: 'hidden', zIndex: isFlipped ? 0 : 2 }}>
-                        
+                    <div className="absolute inset-0 backface-hidden rounded-2xl overflow-hidden shadow-2xl bg-linear-to-br from-[#064e3b] via-[#059669] to-[#047857]"
+                        style={{ backfaceVisibility: 'hidden', zIndex: isFlipped ? 0 : 2 }}>
+
                         {/* Mesh Gradient / Orbs */}
                         <div className="absolute -top-20 -right-20 w-40 h-40 bg-amber-400/20 blur-3xl rounded-full" />
                         <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-emerald-400/20 blur-3xl rounded-full" />
-                        
+
                         {/* Background Logo Touch Design */}
                         <div className="absolute right-0 bottom-0 top-0 w-1/2 opacity-15 pointer-events-none overflow-hidden">
                             <img src="/rtifn.png" alt="" className="h-full w-full object-contain translate-x-1/4 scale-150 grayscale brightness-200" />
@@ -274,23 +410,23 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
 
                     {/* Back Side */}
                     <div className="absolute inset-0 rounded-2xl overflow-hidden shadow-2xl bg-[#064e3b]"
-                         style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', zIndex: isFlipped ? 2 : 0 }}>
-                        
+                        style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', zIndex: isFlipped ? 2 : 0 }}>
+
                         <div className="absolute top-4 left-0 w-full h-6 bg-black/30" />
-                        
+
                         <div className="h-full p-5 flex flex-col items-center justify-center text-center space-y-3 z-10 relative">
                             <div className="bg-white p-2 rounded-xl shadow-2xl">
-                                <img 
-                                    src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://relaxnigeria.com" 
-                                    alt="QR" 
+                                <img
+                                    src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://relaxnigeria.com"
+                                    alt="QR"
                                     className="w-16 h-16"
                                 />
                             </div>
-                            
+
                             <div className="space-y-1">
                                 <p className="text-[9px] text-white font-bold opacity-90 uppercase tracking-widest leading-tight">Relax Nigeria Initiative</p>
                                 <p className="text-[7px] text-white/60 leading-relaxed max-w-[200px] mx-auto">
-                                    This card is issued to the person whose details appear on the front. 
+                                    This card is issued to the person whose details appear on the front.
                                     Scan QR code to verify membership status or visit relaxnigeria.com
                                 </p>
                             </div>
@@ -317,15 +453,22 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
             </p>
 
             {/* Actions */}
-            <div className="mt-8 flex gap-4 w-full">
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full">
+                <button
+                    onClick={handleDownloadPDF}
+                    disabled={isSaving}
+                    className="flex-1 group relative overflow-hidden bg-amber-500 text-darkgreen font-black py-4 rounded-2xl shadow-lg hover:shadow-amber-500/20 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+                >
+                    <Shield className="w-5 h-5" />
+                    <span>{isSaving ? 'PREPARING...' : 'DOWNLOAD PRINT PDF'}</span>
+                </button>
                 <button
                     onClick={handleDownload}
                     disabled={isSaving}
                     className="flex-1 group relative overflow-hidden bg-darkgreen text-white font-bold py-4 rounded-2xl shadow-lg hover:shadow-darkgreen/20 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
                 >
-                    <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
                     {isSaving ? <RefreshCw className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
-                    <span>{isSaving ? 'GENERATING...' : 'DOWNLOAD ID CARD'}</span>
+                    <span>{isSaving ? 'GENERATING...' : 'DOWNLOAD PNG'}</span>
                 </button>
             </div>
         </div>

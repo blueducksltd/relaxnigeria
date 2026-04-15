@@ -20,8 +20,9 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Member ID is required." }, { status: 400 });
     }
 
-    // First, try to get from our database
-    const storedUrls = await getIdCardUrls(memberId);
+    // First, try to get from our database using the verified email from the session
+    const userEmail = session.user.email;
+    const storedUrls = await getIdCardUrls(memberId, userEmail);
     
     if (storedUrls && storedUrls.frontUrl) {
       return NextResponse.json({
@@ -47,8 +48,8 @@ export async function GET(req: Request) {
             const latestFront = frontBlobs.reduce((l, b) => new Date(b.uploadedAt) > new Date(l.uploadedAt) ? b : l);
             const latestBack = backBlobs.reduce((l, b) => new Date(b.uploadedAt) > new Date(l.uploadedAt) ? b : l);
 
-            // Sync to database
-            await storeIdCardUrls(memberId, latestFront.url, latestBack.url);
+            // Sync to database using the verified email
+            await storeIdCardUrls(memberId, latestFront.url, latestBack.url, userEmail);
 
             return NextResponse.json({
                 success: true,

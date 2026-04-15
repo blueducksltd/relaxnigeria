@@ -1,15 +1,27 @@
 import dbConnect from "./mongodb";
 import User from "@/models/User";
 
-export async function storeIdCardUrls(memberId: string, frontUrl: string, backUrl: string) {
+export async function storeIdCardUrls(memberId: string, frontUrl: string, backUrl: string, email?: string) {
   await dbConnect();
   
-  // Find user by memberId (this could be their MongoDB ID or a custom field like phone/email)
-  // In this app, memberId in the context of the ID card seems to be the MongoDB ID or unique identifier.
-  // We'll search by _id first, then by votersCard as fallback
-  let user = await User.findById(memberId);
+  // Try to find the user by multiple identifiers for maximum reliability
+  let user = null;
+  
+  if (email) {
+    user = await User.findOne({ email: email.toLowerCase() });
+  }
   
   if (!user) {
+    // Falls back to search by MongoDB ID
+    try {
+      user = await User.findById(memberId);
+    } catch (e) {
+      // Invalid ID format
+    }
+  }
+  
+  if (!user) {
+    // Last fallback: votersCard
     user = await User.findOne({ votersCard: memberId });
   }
 
@@ -24,9 +36,23 @@ export async function storeIdCardUrls(memberId: string, frontUrl: string, backUr
   return false;
 }
 
-export async function getIdCardUrls(memberId: string) {
+export async function getIdCardUrls(memberId: string, email?: string) {
   await dbConnect();
-  const user = await User.findById(memberId) || await User.findOne({ votersCard: memberId });
+  
+  let user = null;
+  if (email) {
+    user = await User.findOne({ email: email.toLowerCase() });
+  }
+  
+  if (!user) {
+    try {
+      user = await User.findById(memberId);
+    } catch (e) {}
+  }
+  
+  if (!user) {
+    user = await User.findOne({ votersCard: memberId });
+  }
   
   if (user && user.idCardFrontUrl) {
     return {

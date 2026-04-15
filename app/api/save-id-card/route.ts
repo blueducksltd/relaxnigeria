@@ -48,8 +48,9 @@ export async function POST(req: Request) {
       uploadToBlob(finalBackImage, 'back')
     ]);
 
-    // Store URLs in MongoDB
-    const stored = await storeIdCardUrls(memberId, frontBlob.url, backBlob.url);
+    // Store URLs in MongoDB using the authenticated user's email as the primary key
+    const userEmail = session.user.email;
+    const stored = await storeIdCardUrls(memberId, frontBlob.url, backBlob.url, userEmail);
 
     return NextResponse.json({
       success: true,
@@ -81,11 +82,11 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: "Member ID is required." }, { status: 400 });
     }
 
-    // We can allow GET for anyone if we want the card to be public via link,
-    // or restrict it to authenticated sessions.
+    const session = await getServerSession(authOptions);
+    const userEmail = session?.user?.email;
     
     const { getIdCardUrls } = await import("@/lib/id-card-storage");
-    const urls = await getIdCardUrls(memberId);
+    const urls = await getIdCardUrls(memberId, userEmail);
 
     if (!urls) {
       return NextResponse.json({ error: "ID card not found." }, { status: 404 });
