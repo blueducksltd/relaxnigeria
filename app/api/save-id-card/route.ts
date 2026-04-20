@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     ]);
 
     // Store URLs in MongoDB using the authenticated user's email as the primary key
-    const userEmail = session.user.email;
+    const userEmail = session.user.email || undefined;
     const stored = await storeIdCardUrls(memberId, frontBlob.url, backBlob.url, userEmail);
 
     return NextResponse.json({
@@ -83,7 +83,7 @@ export async function GET(req: Request) {
     }
 
     const session = await getServerSession(authOptions);
-    const userEmail = session?.user?.email;
+    const userEmail = session?.user?.email || undefined;
     
     const { getIdCardUrls } = await import("@/lib/id-card-storage");
     const urls = await getIdCardUrls(memberId, userEmail);

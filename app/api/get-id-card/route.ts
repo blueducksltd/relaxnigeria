@@ -21,7 +21,7 @@ export async function GET(req: Request) {
     }
 
     // First, try to get from our database using the verified email from the session
-    const userEmail = session.user.email;
+    const userEmail = session.user.email || undefined;
     const storedUrls = await getIdCardUrls(memberId, userEmail);
     
     if (storedUrls && storedUrls.frontUrl) {
