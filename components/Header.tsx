@@ -6,7 +6,7 @@ import Image from 'next/image'
 import SoundToggle from './SoundToggle'
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'motion/react'
 import { usePathname } from 'next/navigation'
-import JoinUsModal from './JoinUsModal'
+import { useModal } from '@/contexts/ModalContext'
 import { useSession } from 'next-auth/react'
 
 const Header = () => {
@@ -16,7 +16,7 @@ const Header = () => {
     const [isVisible, setIsVisible] = useState(true)
     const [isScrolled, setIsScrolled] = useState(false)
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [isJoinModalOpen, setIsJoinModalOpen] = useState(false)
+    const { openJoinUsModal } = useModal()
     const { scrollY } = useScroll()
     const pathname = usePathname()
 
@@ -97,7 +97,7 @@ const Header = () => {
                         My Dashboard
                     </Link>
                 ) : (
-                    <button onClick={() => setIsJoinModalOpen(true)} className='hidden lg:inline-block border-2 border-darkgreen text-darkgreen font-medium rounded-full px-7 py-2.5 hover:bg-darkgreen hover:text-white hover:shadow-lg hover:shadow-darkgreen/20 transition-all active:scale-95 cursor-pointer'>
+                    <button onClick={openJoinUsModal} className='hidden lg:inline-block border-2 border-darkgreen text-darkgreen font-medium rounded-full px-7 py-2.5 hover:bg-darkgreen hover:text-white hover:shadow-lg hover:shadow-darkgreen/20 transition-all active:scale-95 cursor-pointer'>
                         Join us
                     </button>
                 )}
@@ -159,7 +159,7 @@ const Header = () => {
                                 <button
                                     onClick={() => {
                                         toggleMenu()
-                                        setIsJoinModalOpen(true)
+                                        openJoinUsModal()
                                     }}
                                     className='bg-darkgreen text-milk text-center font-medium rounded-2xl py-5 text-xl shadow-xl shadow-darkgreen/20 w-full cursor-pointer'
                                 >
@@ -170,8 +170,6 @@ const Header = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
-
-            <JoinUsModal isOpen={isJoinModalOpen} onClose={() => setIsJoinModalOpen(false)} />
         </motion.header>
     )
 }

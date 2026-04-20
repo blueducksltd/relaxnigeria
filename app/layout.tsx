@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
 import { SoundProvider } from "@/contexts/SoundContext";
+import { ModalProvider } from "@/contexts/ModalContext";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -31,7 +32,9 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <SoundProvider>
-            {children}
+            <ModalProvider>
+              {children}
+            </ModalProvider>
           </SoundProvider>
         </AuthProvider>
       </body>

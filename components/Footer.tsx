@@ -4,8 +4,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
 import BannerRight from './BannerRight'
+import { useModal } from '@/contexts/ModalContext'
 
 const Footer = () => {
+    const { openJoinUsModal } = useModal()
     return (
         <main className="">
             {/* Banner Right */}
@@ -20,7 +22,7 @@ const Footer = () => {
 
                     <div className='flex flex-col gap-3 w-full max-w-96'>
                         <button className='bg-brown text-black px-10 py-5 rounded-full font-bold hover:scale-[1.02] transition-all active:scale-95 whitespace-nowrap'>Donation</button>
-                        <button className='bg-lightgreen text-black px-10 py-5 rounded-full font-bold hover:scale-[1.02] transition-all active:scale-95 whitespace-nowrap'>Join RTFI</button>
+                        <button onClick={openJoinUsModal} className='bg-lightgreen text-black px-10 py-5 rounded-full font-bold hover:scale-[1.02] transition-all active:scale-95 whitespace-nowrap'>Join RTFI</button>
                     </div>
                 </section>
 

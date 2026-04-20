@@ -2,9 +2,11 @@
 
 import React, { useEffect, useRef } from 'react'
 import { useSound } from '@/contexts/SoundContext'
+import { useModal } from '@/contexts/ModalContext'
 
 const Hero = () => {
     const { isMuted } = useSound()
+    const { openJoinUsModal } = useModal()
     const videoRef = useRef<HTMLVideoElement>(null)
 
     useEffect(() => {
@@ -71,7 +73,7 @@ const Hero = () => {
 
                     <div className='flex flex-wrap items-center justify-center lg:justify-start gap-4 md:gap-5 mt-4'>
                         <button className='bg-brown text-black px-8 md:px-12 py-3 rounded-full hover:scale-105 transition-transform w-full sm:w-auto'>Donate</button>
-                        <button className='bg-darkgreen text-milk px-8 md:px-12 py-3 rounded-full hover:scale-105 transition-transform w-full sm:w-auto'>Volunteer</button>
+                        <button onClick={openJoinUsModal} className='bg-darkgreen text-milk px-8 md:px-12 py-3 rounded-full hover:scale-105 transition-transform w-full sm:w-auto'>Volunteer</button>
                     </div>
                 </div>
             </section>
