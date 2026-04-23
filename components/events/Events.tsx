@@ -2,6 +2,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { Calendar, ListFilter, MapPin, Search } from 'lucide-react'
+import { useModal } from '@/contexts/ModalContext'
 
 const events = [
     {
@@ -15,6 +16,7 @@ const events = [
 ]
 
 const Events = () => {
+    const { openEventModal } = useModal();
     const [items, setItems] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(true);
     const [searchTerm, setSearchTerm] = React.useState("");
@@ -205,7 +207,11 @@ const Events = () => {
             <section className='px-6 md:px-20 bg-[#FBFFDD] py-20 md:py-24'>
                 <section className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-8 justify-items-center'>
                     {filteredItems.length > 0 ? filteredItems.map((event, index) => (
-                        <div key={event._id || index} className='flex flex-col group grow lg:max-w-full'>
+                        <div 
+                            key={event._id || index} 
+                            className='flex flex-col group grow lg:max-w-full cursor-pointer'
+                            onClick={() => openEventModal(event)}
+                        >
                             <div
                                 className="bg-cover bg-center w-full aspect-4/3.5 md:h-[348px] rounded-2xl md:rounded-3xl shadow-md group-hover:shadow-xl group-hover:scale-[1.01] transition-all duration-500"
                                 style={{ backgroundImage: `url(${event.image})` }}
