@@ -1,8 +1,10 @@
 'use client'
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Eye, EyeOff, CheckCircle, Loader2, ShieldCheck, ShieldX, BadgeCheck } from 'lucide-react';
+import { X, Eye, EyeOff, CheckCircle, Loader2, ShieldCheck, ShieldX, BadgeCheck, LogIn } from 'lucide-react';
 import { getLGAsForState } from '../data/nigeria-lgas';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface JoinUsModalProps {
     isOpen: boolean;
@@ -12,15 +14,21 @@ interface JoinUsModalProps {
 type VinStatus = 'idle' | 'verifying' | 'verified' | 'failed';
 
 const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
-    const [step, setStep] = useState<'form' | 'success'>('form');
+    const router = useRouter();
+    const [step, setStep] = useState<'form' | 'success' | 'login'>('form');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
+    // Login state
+    const [loginEmail, setLoginEmail] = useState('');
+    const [loginPassword, setLoginPassword] = useState('');
+    const [showLoginPassword, setShowLoginPassword] = useState(false);
+
     // VIN verification state
     const [vinStatus, setVinStatus] = useState<VinStatus>('idle');
     const [vinError, setVinError] = useState('');
-    const [vinDetail, setVinDetail] = useState<any>(null);
+    const [, setVinDetail] = useState<Record<string, unknown> | null>(null);
 
     const [formData, setFormData] = useState({
         firstName: '', lastName: '', phone: '', email: '',
@@ -47,7 +55,7 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
 
     const handleVerifyVin = async () => {
         if (!formData.votersCard.trim()) {
-            setVinError('Please enter your Voter\'s Card Number first.');
+            setVinError('Please enter your Voter&apos;s Card Number first.');
             return;
         }
         setVinStatus('verifying');
@@ -96,7 +104,7 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
         e.preventDefault();
 
         if (vinStatus !== 'verified') {
-            setError('Please verify your Voter\'s Card Number before submitting.');
+            setError('Please verify your Voter&apos;s Card Number before submitting.');
             return;
         }
 
@@ -142,6 +150,27 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
         }
     };
 
+    const handleLogin = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+
+        const res = await signIn('user-login', {
+            email: loginEmail,
+            password: loginPassword,
+            redirect: false,
+        });
+
+        setLoading(false);
+
+        if (res?.error) {
+            setError('Invalid email or password. Please try again.');
+        } else {
+            router.push('/dashboard');
+            onClose();
+        }
+    };
+
     const handleClose = () => {
         onClose();
         setTimeout(() => {
@@ -151,6 +180,8 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
             setVinError('');
             setVinDetail(null);
             setFormData({ firstName: '', lastName: '', phone: '', email: '', password: '', votersCard: '', state: '', lga: '', ward: '' });
+            setLoginEmail('');
+            setLoginPassword('');
         }, 300);
     };
 
@@ -184,6 +215,66 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
                                     Done
                                 </button>
                             </div>
+                        ) : step === 'login' ? (
+                            <div className="p-6 md:p-8">
+                                <div className="flex justify-between items-start mb-6">
+                                    <div>
+                                        <h2 className="text-3xl font-laybar text-darkgreen">Member Login</h2>
+                                        <p className="text-sm text-darkgreen/60 mt-1">Sign in to access your RTFIN dashboard.</p>
+                                    </div>
+                                    <button onClick={handleClose} className="p-2 hover:bg-darkgreen/10 rounded-full transition-all text-darkgreen mt-1">
+                                        <X className="w-5 h-5" />
+                                    </button>
+                                </div>
+
+                                {error && (
+                                    <div className="mb-5 p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
+                                        {error}
+                                    </div>
+                                )}
+
+                                <form onSubmit={handleLogin} className="space-y-5">
+                                    <div className="space-y-1.5">
+                                        <label className={labelClass}>Email Address</label>
+                                        <input
+                                            required type="email" value={loginEmail}
+                                            onChange={e => setLoginEmail(e.target.value)}
+                                            placeholder="your@email.com"
+                                            className={inputClass}
+                                        />
+                                    </div>
+
+                                    <div className="space-y-1.5">
+                                        <label className={labelClass}>Password</label>
+                                        <div className="relative">
+                                            <input
+                                                required type={showLoginPassword ? 'text' : 'password'} value={loginPassword}
+                                                onChange={e => setLoginPassword(e.target.value)}
+                                                placeholder="••••••••"
+                                                className={`${inputClass} pr-12`}
+                                            />
+                                            <button type="button" onClick={() => setShowLoginPassword(!showLoginPassword)}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-darkgreen/40 hover:text-darkgreen transition-all">
+                                                {showLoginPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" disabled={loading}
+                                        className="w-full flex items-center justify-center gap-2 bg-darkgreen text-white font-medium rounded-xl py-4 hover:bg-darkgreen/90 transition-all disabled:opacity-60 mt-2"
+                                    >
+                                        {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <LogIn className="w-4 h-4" />}
+                                        {loading ? 'Signing in...' : 'Sign In'}
+                                    </button>
+                                </form>
+
+                                <p className="text-center text-sm text-darkgreen/50 mt-8">
+                                    Don&apos;t have an account yet?{' '}
+                                    <button onClick={() => { setStep('form'); setError(''); }} className="text-darkgreen font-semibold hover:underline">
+                                        Join Us
+                                    </button>
+                                </p>
+                            </div>
                         ) : (
                             <div className="p-6 md:p-8">
                                 <div className="flex justify-between items-start mb-6">
@@ -203,44 +294,9 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
                                 )}
 
                                 <form onSubmit={handleSubmit} className="space-y-4">
-                                    {/* Name row */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-1.5">
-                                            <label className={labelClass}>First Name</label>
-                                            <input required name="firstName" value={formData.firstName} onChange={handleChange} type="text" className={inputClass} placeholder="John" />
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className={labelClass}>Last Name</label>
-                                            <input required name="lastName" value={formData.lastName} onChange={handleChange} type="text" className={inputClass} placeholder="Doe" />
-                                        </div>
-                                    </div>
-
-                                    {/* Contact row */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-1.5">
-                                            <label className={labelClass}>Phone Number</label>
-                                            <input required name="phone" value={formData.phone} onChange={handleChange} type="tel" className={inputClass} placeholder="08012345678" />
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className={labelClass}>Email Address</label>
-                                            <input required name="email" value={formData.email} onChange={handleChange} type="email" className={inputClass} placeholder="john@example.com" />
-                                        </div>
-                                    </div>
-
-                                    {/* Password */}
-                                    <div className="space-y-1.5">
-                                        <label className={labelClass}>Password</label>
-                                        <div className="relative">
-                                            <input required name="password" value={formData.password} onChange={handleChange} type={showPassword ? 'text' : 'password'} className={`${inputClass} pr-12`} placeholder="Create a password (min. 6 characters)" minLength={6} />
-                                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-darkgreen/40 hover:text-darkgreen transition-all">
-                                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                            </button>
-                                        </div>
-                                    </div>
-
                                     {/* VIN with verify button */}
                                     <div className="space-y-1.5">
-                                        <label className={labelClass}>Voter's Card Number (VIN)</label>
+                                        <label className={labelClass}>Voter&apos;s Card Number (VIN)</label>
                                         <div className="flex gap-2">
                                             <input
                                                 required
@@ -290,6 +346,41 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
                                         )}
                                     </div>
 
+                                    {/* Name row */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>First Name</label>
+                                            <input required name="firstName" value={formData.firstName} onChange={handleChange} type="text" className={inputClass} placeholder="John" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>Last Name</label>
+                                            <input required name="lastName" value={formData.lastName} onChange={handleChange} type="text" className={inputClass} placeholder="Doe" />
+                                        </div>
+                                    </div>
+
+                                    {/* Contact row */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>Phone Number</label>
+                                            <input required name="phone" value={formData.phone} onChange={handleChange} type="tel" className={inputClass} placeholder="08012345678" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>Email Address</label>
+                                            <input required name="email" value={formData.email} onChange={handleChange} type="email" className={inputClass} placeholder="john@example.com" />
+                                        </div>
+                                    </div>
+
+                                    {/* Password */}
+                                    <div className="space-y-1.5">
+                                        <label className={labelClass}>Password</label>
+                                        <div className="relative">
+                                            <input required name="password" value={formData.password} onChange={handleChange} type={showPassword ? 'text' : 'password'} className={`${inputClass} pr-12`} placeholder="Create a password (min. 6 characters)" minLength={6} />
+                                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-darkgreen/40 hover:text-darkgreen transition-all">
+                                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                            </button>
+                                        </div>
+                                    </div>
+
                                     {/* Location row */}
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div className="space-y-1.5">
@@ -327,8 +418,15 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
                                             {loading ? 'Submitting...' : vinStatus !== 'verified' ? 'Verify VIN to Continue' : 'Complete Registration'}
                                         </button>
                                         {vinStatus !== 'verified' && (
-                                            <p className="text-center text-xs text-darkgreen/40 mt-2">You must verify your Voter's Card Number to proceed.</p>
+                                            <p className="text-center text-xs text-darkgreen/40 mt-2">You must verify your Voter&apos;s Card Number to proceed.</p>
                                         )}
+
+                                        <p className="text-center text-sm text-darkgreen/50 mt-6">
+                                            Already registered?{' '}
+                                            <button type="button" onClick={() => { setStep('login'); setError(''); }} className="text-darkgreen font-semibold hover:underline">
+                                                Login here
+                                            </button>
+                                        </p>
                                     </div>
                                 </form>
                             </div>
