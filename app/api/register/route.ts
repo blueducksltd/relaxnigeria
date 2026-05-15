@@ -6,9 +6,9 @@ import User from "@/models/User";
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { firstName, lastName, phone, email, password, votersCard, state, lga, ward } = body;
+    const { firstName, lastName, phone, email, password, votersCard, state, lga, ward, dob } = body;
 
-    if (!firstName || !lastName || !phone || !email || !password || !votersCard || !state || !lga || !ward) {
+    if (!firstName || !lastName || !phone || !email || !password || !votersCard || !state || !lga || !ward || !dob) {
       return NextResponse.json({ error: "All fields are required." }, { status: 400 });
     }
 
@@ -31,6 +31,7 @@ export async function POST(req: Request) {
       state,
       lga,
       ward,
+      dob,
     });
 
     return NextResponse.json({ message: "Registration successful!", userId: user._id.toString() }, { status: 201 });

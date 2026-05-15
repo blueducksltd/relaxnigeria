@@ -32,7 +32,7 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
 
     const [formData, setFormData] = useState({
         firstName: '', lastName: '', phone: '', email: '',
-        password: '', votersCard: '', state: '', lga: '', ward: ''
+        password: '', votersCard: '', state: '', lga: '', ward: '', dob: ''
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -66,7 +66,14 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
             const res = await fetch('/api/verify-vin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ vin: formData.votersCard }),
+                body: JSON.stringify({
+                    vin: formData.votersCard,
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    dob: formData.dob,
+                    lga: formData.lga,
+                    state: formData.state
+                }),
             });
             const data = await res.json();
 
@@ -179,7 +186,7 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
             setVinStatus('idle');
             setVinError('');
             setVinDetail(null);
-            setFormData({ firstName: '', lastName: '', phone: '', email: '', password: '', votersCard: '', state: '', lga: '', ward: '' });
+            setFormData({ firstName: '', lastName: '', phone: '', email: '', password: '', votersCard: '', state: '', lga: '', ward: '', dob: '' });
             setLoginEmail('');
             setLoginPassword('');
         }, 300);
@@ -294,6 +301,75 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
                                 )}
 
                                 <form onSubmit={handleSubmit} className="space-y-4">
+
+                                    {/* Name row */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>First Name</label>
+                                            <input required name="firstName" value={formData.firstName} onChange={handleChange} type="text" className={inputClass} placeholder="John" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>Last Name</label>
+                                            <input required name="lastName" value={formData.lastName} onChange={handleChange} type="text" className={inputClass} placeholder="Doe" />
+                                        </div>
+                                    </div>
+
+                                    {/* Contact row */}
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>Phone Number</label>
+                                            <input required name="phone" value={formData.phone} onChange={handleChange} type="tel" className={inputClass} placeholder="08012345678" />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>Email Address</label>
+                                            <input required name="email" value={formData.email} onChange={handleChange} type="email" className={inputClass} placeholder="john@example.com" />
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {/* Password */}
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>Password</label>
+                                            <div className="relative">
+                                                <input required name="password" value={formData.password} onChange={handleChange} type={showPassword ? 'text' : 'password'} className={`${inputClass} pr-12`} placeholder="Create a password (min. 6 characters)" minLength={6} />
+                                                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-darkgreen/40 hover:text-darkgreen transition-all">
+                                                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>Date of Birth</label>
+                                            <input required name="dob" value={formData.dob} onChange={handleChange} type="date" className={inputClass} />
+                                        </div>
+                                    </div>
+
+                                    {/* Location row */}
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>State</label>
+                                            <select required name="state" value={formData.state} onChange={handleChange} className={`${inputClass} appearance-none`}>
+                                                <option value="" disabled>Select State</option>
+                                                {["Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara", "Abuja (FCT)"].map(s => (
+                                                    <option key={s} value={s}>{s}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>LGA</label>
+                                            <select required name="lga" value={formData.lga} onChange={handleChange} className={`${inputClass} appearance-none`} disabled={!formData.state}>
+                                                <option value="" disabled>{formData.state ? 'Select LGA' : 'Select State first'}</option>
+                                                {getLGAsForState(formData.state).map(lga => (
+                                                    <option key={lga} value={lga}>{lga}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className={labelClass}>Ward</label>
+                                            <input required name="ward" value={formData.ward} onChange={handleChange} type="text" className={inputClass} placeholder="Your ward" />
+                                        </div>
+                                    </div>
+
                                     {/* VIN with verify button */}
                                     <div className="space-y-1.5">
                                         <label className={labelClass}>Voter&apos;s Card Number (VIN)</label>
@@ -311,7 +387,7 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
                                             <button
                                                 type="button"
                                                 onClick={handleVerifyVin}
-                                                disabled={vinStatus === 'verifying' || vinStatus === 'verified' || !formData.votersCard.trim()}
+                                                disabled={vinStatus === 'verifying' || vinStatus === 'verified' || !formData.votersCard.trim() || !formData.firstName.trim() || !formData.lastName.trim() || !formData.dob || !formData.state || !formData.lga}
                                                 className={`shrink-0 px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap
                                                     ${vinStatus === 'verified'
                                                         ? 'bg-green-100 text-green-700 cursor-default'
@@ -344,67 +420,9 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
                                         {vinStatus === 'idle' && vinError && (
                                             <p className="text-xs text-red-500 mt-1">{vinError}</p>
                                         )}
-                                    </div>
-
-                                    {/* Name row */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-1.5">
-                                            <label className={labelClass}>First Name</label>
-                                            <input required name="firstName" value={formData.firstName} onChange={handleChange} type="text" className={inputClass} placeholder="John" />
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className={labelClass}>Last Name</label>
-                                            <input required name="lastName" value={formData.lastName} onChange={handleChange} type="text" className={inputClass} placeholder="Doe" />
-                                        </div>
-                                    </div>
-
-                                    {/* Contact row */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-1.5">
-                                            <label className={labelClass}>Phone Number</label>
-                                            <input required name="phone" value={formData.phone} onChange={handleChange} type="tel" className={inputClass} placeholder="08012345678" />
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className={labelClass}>Email Address</label>
-                                            <input required name="email" value={formData.email} onChange={handleChange} type="email" className={inputClass} placeholder="john@example.com" />
-                                        </div>
-                                    </div>
-
-                                    {/* Password */}
-                                    <div className="space-y-1.5">
-                                        <label className={labelClass}>Password</label>
-                                        <div className="relative">
-                                            <input required name="password" value={formData.password} onChange={handleChange} type={showPassword ? 'text' : 'password'} className={`${inputClass} pr-12`} placeholder="Create a password (min. 6 characters)" minLength={6} />
-                                            <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-darkgreen/40 hover:text-darkgreen transition-all">
-                                                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    {/* Location row */}
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div className="space-y-1.5">
-                                            <label className={labelClass}>State</label>
-                                            <select required name="state" value={formData.state} onChange={handleChange} className={`${inputClass} appearance-none`}>
-                                                <option value="" disabled>Select State</option>
-                                                {["Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara", "Abuja (FCT)"].map(s => (
-                                                    <option key={s} value={s}>{s}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className={labelClass}>LGA</label>
-                                            <select required name="lga" value={formData.lga} onChange={handleChange} className={`${inputClass} appearance-none`} disabled={!formData.state}>
-                                                <option value="" disabled>{formData.state ? 'Select LGA' : 'Select State first'}</option>
-                                                {getLGAsForState(formData.state).map(lga => (
-                                                    <option key={lga} value={lga}>{lga}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className="space-y-1.5">
-                                            <label className={labelClass}>Ward</label>
-                                            <input required name="ward" value={formData.ward} onChange={handleChange} type="text" className={inputClass} placeholder="Your ward" />
-                                        </div>
+                                        {vinStatus === 'idle' && (!formData.firstName.trim() || !formData.lastName.trim() || !formData.dob || !formData.state || !formData.lga) && formData.votersCard.trim() && (
+                                            <p className="text-xs text-darkgreen/50 mt-1">Please fill in your Name, DOB, State, and LGA to enable VIN verification.</p>
+                                        )}
                                     </div>
 
                                     {/* Submit */}

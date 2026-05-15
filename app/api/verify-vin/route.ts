@@ -2,10 +2,14 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { vin } = await req.json();
+    const { vin, firstName, lastName, dob, lga, state } = await req.json();
 
     if (!vin || vin.trim().length < 5) {
       return NextResponse.json({ error: "A valid VIN is required." }, { status: 400 });
+    }
+
+    if (!firstName || !lastName || !dob || !lga || !state) {
+      return NextResponse.json({ error: "First name, last name, date of birth, LGA, and state are required for verification." }, { status: 400 });
     }
 
     const response = await fetch("https://api.prembly.com/verification/voters_card", {
@@ -15,7 +19,14 @@ export async function POST(req: Request) {
         "Content-Type": "application/json",
         "accept": "application/json",
       },
-      body: JSON.stringify({ number: vin.trim() }),
+      body: JSON.stringify({
+        number: vin.trim(),
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        dob: dob, // Format should be YYYY-MM-DD
+        lga: lga.trim(),
+        state: state.trim(),
+      }),
     });
 
     const data = await response.json();

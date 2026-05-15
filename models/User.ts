@@ -11,6 +11,7 @@ const UserSchema = new Schema(
     state: { type: String, required: true },
     lga: { type: String, required: true },
     ward: { type: String, required: true },
+    dob: { type: String, required: true },
     role: { type: String, default: "user" },
     idCardFrontUrl: { type: String },
     idCardBackUrl: { type: String },
