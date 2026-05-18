@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { vin, firstName, lastName, dob, lga, state } = await req.json();
+    const { number, firstName, lastName, dob, lga, state } = await req.json();
 
-    if (!vin || vin.trim().length < 5) {
+    if (!number || number.trim().length < 5) {
       return NextResponse.json({ error: "A valid VIN is required." }, { status: 400 });
     }
 
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         "accept": "application/json",
       },
       body: JSON.stringify({
-        number: vin.trim(),
+        number: number.trim(),
         first_name: firstName.trim(),
         last_name: lastName.trim(),
         dob: dob, // Format should be YYYY-MM-DD
