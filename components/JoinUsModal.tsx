@@ -68,8 +68,8 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     number: formData.votersCard,
-                    firstName: formData.firstName,
-                    lastName: formData.lastName,
+                    first_name: formData.firstName,
+                    last_name: formData.lastName,
                     dob: formData.dob,
                     lga: formData.lga,
                     state: formData.state
