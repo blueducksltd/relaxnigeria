@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Eye, EyeOff, CheckCircle, Loader2, ShieldCheck, ShieldX, BadgeCheck, LogIn } from 'lucide-react';
-import { getLGAsForState } from '../data/nigeria-lgas';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
@@ -11,7 +10,45 @@ interface JoinUsModalProps {
     onClose: () => void;
 }
 
-type VinStatus = 'idle' | 'verifying' | 'verified' | 'failed';
+type NinStatus = 'idle' | 'verifying' | 'verified' | 'failed';
+
+const formatDateToInput = (dateStr: string): string => {
+    if (!dateStr) return '';
+    
+    // Check if already in yyyy-mm-dd format
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+        return dateStr;
+    }
+    
+    // Check for dd-mm-yyyy or dd/mm/yyyy
+    const parts = dateStr.split(/[-/]/);
+    if (parts.length === 3) {
+        if (parts[0].length === 4) {
+            const yyyy = parts[0];
+            const mm = parts[1].padStart(2, '0');
+            const dd = parts[2].padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        } else if (parts[2].length === 4) {
+            const ddOrMm1 = parts[0].padStart(2, '0');
+            const ddOrMm2 = parts[1].padStart(2, '0');
+            const yyyy = parts[2];
+            // Standard Nigerian/Prembly date is dd-mm-yyyy
+            return `${yyyy}-${ddOrMm2}-${ddOrMm1}`;
+        }
+    }
+    
+    try {
+        const d = new Date(dateStr);
+        if (!isNaN(d.getTime())) {
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            const dd = String(d.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+    } catch (e) {}
+    
+    return '';
+};
 
 const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
     const router = useRouter();
@@ -25,14 +62,14 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
     const [loginPassword, setLoginPassword] = useState('');
     const [showLoginPassword, setShowLoginPassword] = useState(false);
 
-    // VIN verification state
-    const [vinStatus, setVinStatus] = useState<VinStatus>('idle');
-    const [vinError, setVinError] = useState('');
-    const [, setVinDetail] = useState<Record<string, unknown> | null>(null);
+    // NIN verification state
+    const [ninStatus, setNinStatus] = useState<NinStatus>('idle');
+    const [ninError, setNinError] = useState('');
+    const [, setNinDetail] = useState<Record<string, unknown> | null>(null);
 
     const [formData, setFormData] = useState({
         firstName: '', lastName: '', phone: '', email: '',
-        password: '', votersCard: '', state: '', lga: '', ward: '', dob: ''
+        password: '', nin: '', state: '', ward: '', dob: ''
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -40,78 +77,65 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
         setFormData(prev => ({ ...prev, [name]: value }));
         setError('');
 
-        // Reset VIN verification if user edits the VIN field
-        if (name === 'votersCard') {
-            setVinStatus('idle');
-            setVinError('');
-            setVinDetail(null);
-        }
-
-        // Clear LGA when state changes
-        if (name === 'state') {
-            setFormData(prev => ({ ...prev, [name]: value, lga: '' }));
+        // Reset NIN verification if user edits the NIN field
+        if (name === 'nin') {
+            setNinStatus('idle');
+            setNinError('');
+            setNinDetail(null);
         }
     };
 
-    const handleVerifyVin = async () => {
-        if (!formData.votersCard.trim()) {
-            setVinError('Please enter your Voter&apos;s Card Number first.');
+    const handleVerifyNin = async () => {
+        if (!formData.nin.trim()) {
+            setNinError('Please enter your National Identification Number first.');
             return;
         }
-        setVinStatus('verifying');
-        setVinError('');
-        setVinDetail(null);
+        setNinStatus('verifying');
+        setNinError('');
+        setNinDetail(null);
 
         try {
-            const res = await fetch('/api/verify-vin', {
+            const res = await fetch('/api/verify-nin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    number: formData.votersCard,
-                    first_name: formData.firstName,
-                    last_name: formData.lastName,
-                    dob: formData.dob,
-                    lga: formData.lga,
-                    state: formData.state
+                    number: formData.nin,
                 }),
             });
             const data = await res.json();
 
             if (!res.ok || !data.verified) {
-                setVinStatus('failed');
-                setVinError(data.error || 'Could not verify this VIN. Please check and try again.');
+                setNinStatus('failed');
+                setNinError(data.error || 'Could not verify this NIN. Please check and try again.');
             } else {
-                setVinStatus('verified');
+                setNinStatus('verified');
                 const verificationData = data.detail || data.data || {};
-                setVinDetail(verificationData);
+                setNinDetail(verificationData);
 
                 // Autofill fields based on returned data
-                const states = ["Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara", "Abuja (FCT)"];
-                let matchedState = '';
-                if (verificationData?.state) {
-                    matchedState = states.find(s => s.toLowerCase() === verificationData.state.toLowerCase() || (s === "Abuja (FCT)" && verificationData.state.toLowerCase() === "abuja")) || verificationData.state;
-                }
+                const resFirstName = verificationData.firstname || verificationData.firstName || (verificationData.fullName ? verificationData.fullName.trim().split(' ')[0] : '');
+                const resLastName = verificationData.lastname || verificationData.lastName || verificationData.surname || (verificationData.fullName ? verificationData.fullName.trim().split(' ').slice(1).join(' ') : '');
+                const rawDob = verificationData.dob || verificationData.birthdate || verificationData.birthDate || verificationData.dateOfBirth || '';
+                const resDob = formatDateToInput(rawDob);
 
                 setFormData(prev => ({
                     ...prev,
-                    state: matchedState || prev.state,
-                    lga: verificationData?.lga || prev.lga,
-                    ward: verificationData?.registrationAreaWard || prev.ward,
-                    firstName: verificationData?.fullName ? verificationData.fullName.trim().split(' ')[0] : prev.firstName,
-                    lastName: verificationData?.fullName ? verificationData.fullName.trim().split(' ').slice(1).join(' ') : prev.lastName,
+                    firstName: resFirstName || prev.firstName,
+                    lastName: resLastName || prev.lastName,
+                    dob: resDob || prev.dob,
                 }));
             }
         } catch {
-            setVinStatus('failed');
-            setVinError('Verification service unavailable. Please try again.');
+            setNinStatus('failed');
+            setNinError('Verification service unavailable. Please try again.');
         }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (vinStatus !== 'verified') {
-            setError('Please verify your Voter&apos;s Card Number before submitting.');
+        if (ninStatus !== 'verified') {
+            setError('Please verify your National Identification Number before submitting.');
             return;
         }
 
@@ -183,10 +207,10 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
         setTimeout(() => {
             setStep('form');
             setError('');
-            setVinStatus('idle');
-            setVinError('');
-            setVinDetail(null);
-            setFormData({ firstName: '', lastName: '', phone: '', email: '', password: '', votersCard: '', state: '', lga: '', ward: '', dob: '' });
+            setNinStatus('idle');
+            setNinError('');
+            setNinDetail(null);
+            setFormData({ firstName: '', lastName: '', phone: '', email: '', password: '', nin: '', state: '', ward: '', dob: '' });
             setLoginEmail('');
             setLoginPassword('');
         }, 300);
@@ -302,15 +326,70 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
 
                                 <form onSubmit={handleSubmit} className="space-y-4">
 
+                                    {/* NIN with verify button */}
+                                    <div className="space-y-1.5">
+                                        <label className={labelClass}>National Identification Number (NIN)</label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                required
+                                                name="nin"
+                                                value={formData.nin}
+                                                onChange={handleChange}
+                                                type="text"
+                                                className={`${inputClass} ${ninStatus === 'verified' ? 'border-green-400 bg-green-50 focus:ring-green-300' : ninStatus === 'failed' ? 'border-red-300' : ''}`}
+                                                placeholder="Enter your 11-digit NIN or Virtual NIN"
+                                                readOnly={ninStatus === 'verified'}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={handleVerifyNin}
+                                                disabled={ninStatus === 'verifying' || ninStatus === 'verified' || !formData.nin.trim()}
+                                                className={`shrink-0 px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap
+                                                    ${ninStatus === 'verified'
+                                                        ? 'bg-green-100 text-green-700 cursor-default'
+                                                        : ninStatus === 'verifying'
+                                                            ? 'bg-darkgreen/20 text-darkgreen/50 cursor-wait'
+                                                            : 'bg-darkgreen text-white hover:bg-darkgreen/90 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed'
+                                                    }`}
+                                            >
+                                                {ninStatus === 'verifying' && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                                                {ninStatus === 'verified' && <BadgeCheck className="w-3.5 h-3.5" />}
+                                                {ninStatus === 'verified' ? 'Verified' : ninStatus === 'verifying' ? 'Verifying...' : 'Verify NIN'}
+                                            </button>
+                                        </div>
+
+                                        {/* NIN status feedback */}
+                                        {ninStatus === 'verified' && (
+                                            <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl mt-1">
+                                                <ShieldCheck className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+                                                <div className="text-xs text-green-700">
+                                                    <p className="font-semibold">NIN Verified Successfully</p>
+                                                </div>
+                                            </div>
+                                        )}
+                                        {ninStatus === 'failed' && (
+                                            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl mt-1">
+                                                <ShieldX className="w-4 h-4 text-red-500 shrink-0" />
+                                                <p className="text-xs text-red-600">{ninError}</p>
+                                            </div>
+                                        )}
+                                        {ninStatus === 'idle' && ninError && (
+                                            <p className="text-xs text-red-500 mt-1">{ninError}</p>
+                                        )}
+                                        {ninStatus === 'idle' && !formData.nin.trim() && (
+                                            <p className="text-xs text-darkgreen/50 mt-1">Please enter and verify your NIN to proceed.</p>
+                                        )}
+                                    </div>
+
                                     {/* Name row */}
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-1.5">
                                             <label className={labelClass}>First Name</label>
-                                            <input required name="firstName" value={formData.firstName} onChange={handleChange} type="text" className={inputClass} placeholder="John" />
+                                            <input required name="firstName" value={formData.firstName} onChange={handleChange} type="text" className={inputClass} placeholder="First Name" />
                                         </div>
                                         <div className="space-y-1.5">
                                             <label className={labelClass}>Last Name</label>
-                                            <input required name="lastName" value={formData.lastName} onChange={handleChange} type="text" className={inputClass} placeholder="Doe" />
+                                            <input required name="lastName" value={formData.lastName} onChange={handleChange} type="text" className={inputClass} placeholder="Last Name" />
                                         </div>
                                     </div>
 
@@ -345,7 +424,7 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
                                     </div>
 
                                     {/* Location row */}
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div className="space-y-1.5">
                                             <label className={labelClass}>State</label>
                                             <select required name="state" value={formData.state} onChange={handleChange} className={`${inputClass} appearance-none`}>
@@ -356,87 +435,23 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
                                             </select>
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className={labelClass}>LGA</label>
-                                            <select required name="lga" value={formData.lga} onChange={handleChange} className={`${inputClass} appearance-none`} disabled={!formData.state}>
-                                                <option value="" disabled>{formData.state ? 'Select LGA' : 'Select State first'}</option>
-                                                {getLGAsForState(formData.state).map(lga => (
-                                                    <option key={lga} value={lga}>{lga}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div className="space-y-1.5">
                                             <label className={labelClass}>Ward</label>
                                             <input required name="ward" value={formData.ward} onChange={handleChange} type="text" className={inputClass} placeholder="Your ward" />
                                         </div>
-                                    </div>
-
-                                    {/* VIN with verify button */}
-                                    <div className="space-y-1.5">
-                                        <label className={labelClass}>Voter&apos;s Card Number (VIN)</label>
-                                        <div className="flex gap-2">
-                                            <input
-                                                required
-                                                name="votersCard"
-                                                value={formData.votersCard}
-                                                onChange={handleChange}
-                                                type="text"
-                                                className={`${inputClass} ${vinStatus === 'verified' ? 'border-green-400 bg-green-50 focus:ring-green-300' : vinStatus === 'failed' ? 'border-red-300' : ''}`}
-                                                placeholder="Enter your Voter Identification Number"
-                                                readOnly={vinStatus === 'verified'}
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={handleVerifyVin}
-                                                disabled={vinStatus === 'verifying' || vinStatus === 'verified' || !formData.votersCard.trim() || !formData.firstName.trim() || !formData.lastName.trim() || !formData.dob || !formData.state || !formData.lga}
-                                                className={`shrink-0 px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap
-                                                    ${vinStatus === 'verified'
-                                                        ? 'bg-green-100 text-green-700 cursor-default'
-                                                        : vinStatus === 'verifying'
-                                                            ? 'bg-darkgreen/20 text-darkgreen/50 cursor-wait'
-                                                            : 'bg-darkgreen text-white hover:bg-darkgreen/90 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed'
-                                                    }`}
-                                            >
-                                                {vinStatus === 'verifying' && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                                                {vinStatus === 'verified' && <BadgeCheck className="w-3.5 h-3.5" />}
-                                                {vinStatus === 'verified' ? 'Verified' : vinStatus === 'verifying' ? 'Verifying...' : 'Verify VIN'}
-                                            </button>
-                                        </div>
-
-                                        {/* VIN status feedback */}
-                                        {vinStatus === 'verified' && (
-                                            <div className="flex items-center gap-2 p-3 bg-green-50 border border-green-200 rounded-xl mt-1">
-                                                <ShieldCheck className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
-                                                <div className="text-xs text-green-700">
-                                                    <p className="font-semibold">VIN Verified Successfully</p>
-                                                </div>
-                                            </div>
-                                        )}
-                                        {vinStatus === 'failed' && (
-                                            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-xl mt-1">
-                                                <ShieldX className="w-4 h-4 text-red-500 shrink-0" />
-                                                <p className="text-xs text-red-600">{vinError}</p>
-                                            </div>
-                                        )}
-                                        {vinStatus === 'idle' && vinError && (
-                                            <p className="text-xs text-red-500 mt-1">{vinError}</p>
-                                        )}
-                                        {vinStatus === 'idle' && (!formData.firstName.trim() || !formData.lastName.trim() || !formData.dob || !formData.state || !formData.lga) && formData.votersCard.trim() && (
-                                            <p className="text-xs text-darkgreen/50 mt-1">Please fill in your Name, DOB, State, and LGA to enable VIN verification.</p>
-                                        )}
                                     </div>
 
                                     {/* Submit */}
                                     <div className="pt-4">
                                         <button
                                             type="submit"
-                                            disabled={loading || vinStatus !== 'verified'}
+                                            disabled={loading || ninStatus !== 'verified'}
                                             className="w-full bg-darkgreen text-white font-medium rounded-xl px-7 py-4 hover:bg-darkgreen/90 hover:shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                         >
                                             {loading && <Loader2 className="w-4 h-4 animate-spin" />}
-                                            {loading ? 'Submitting...' : vinStatus !== 'verified' ? 'Verify VIN to Continue' : 'Complete Registration'}
+                                            {loading ? 'Submitting...' : ninStatus !== 'verified' ? 'Verify NIN to Continue' : 'Complete Registration'}
                                         </button>
-                                        {vinStatus !== 'verified' && (
-                                            <p className="text-center text-xs text-darkgreen/40 mt-2">You must verify your Voter&apos;s Card Number to proceed.</p>
+                                        {ninStatus !== 'verified' && (
+                                            <p className="text-center text-xs text-darkgreen/40 mt-2">You must verify your NIN to proceed.</p>
                                         )}
 
                                         <p className="text-center text-sm text-darkgreen/50 mt-6">

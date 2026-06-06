@@ -10,10 +10,11 @@ interface Member {
     lastName: string
     email: string
     phone: string
-    state: string
-    lga: string
-    ward: string
-    votersCard: string
+    state?: string
+    lga?: string
+    ward?: string
+    votersCard?: string
+    nin?: string
     createdAt: string
 }
 
@@ -139,7 +140,7 @@ export default function AdminMembersPage() {
                                 <div className="min-w-0 pr-8">
                                     <p className="font-bold text-darkgreen text-sm truncate">{member.firstName} {member.lastName}</p>
                                     <p className="text-xs text-darkgreen/40 flex items-center gap-1">
-                                        <MapPin className="w-3 h-3" />{member.state} · {member.lga}
+                                        <MapPin className="w-3 h-3" />{[member.ward, member.state].filter(Boolean).join(' · ') || 'No Location'}
                                     </p>
                                 </div>
                             </div>
@@ -154,7 +155,7 @@ export default function AdminMembersPage() {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <CreditCard className="w-3.5 h-3.5 shrink-0" />
-                                    <span className="truncate">VIN: {member.votersCard}</span>
+                                    <span className="truncate">NIN: {member.nin || member.votersCard || 'N/A'}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Calendar className="w-3.5 h-3.5 shrink-0" />
@@ -162,8 +163,8 @@ export default function AdminMembersPage() {
                                 </div>
                             </div>
                             <div className="mt-3 pt-3 border-t border-darkgreen/5 flex items-center justify-between">
-                                <span className="text-[10px] uppercase tracking-wider text-darkgreen/30 font-medium">Ward: {member.ward}</span>
-                                <span className="text-[10px] bg-lightgreen text-darkgreen font-bold px-2 py-0.5 rounded-full">Member</span>
+                                <span className="text-[10px] uppercase tracking-wider text-darkgreen/30 font-medium">Ward: {member.ward || 'N/A'}</span>
+                                <span className="text-[10px] bg-lightgreen text-[#064e3b] font-bold px-2 py-0.5 rounded-full">Member</span>
                             </div>
                         </motion.div>
                     ))}

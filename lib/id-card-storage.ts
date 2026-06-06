@@ -21,8 +21,10 @@ export async function storeIdCardUrls(memberId: string, frontUrl: string, backUr
   }
   
   if (!user) {
-    // Last fallback: votersCard
-    user = await User.findOne({ votersCard: memberId });
+    // Last fallback: votersCard or nin
+    user = await User.findOne({
+      $or: [{ votersCard: memberId }, { nin: memberId }]
+    });
   }
 
   if (user) {
@@ -51,7 +53,9 @@ export async function getIdCardUrls(memberId: string, email?: string) {
   }
   
   if (!user) {
-    user = await User.findOne({ votersCard: memberId });
+    user = await User.findOne({
+      $or: [{ votersCard: memberId }, { nin: memberId }]
+    });
   }
   
   if (user && user.idCardFrontUrl) {

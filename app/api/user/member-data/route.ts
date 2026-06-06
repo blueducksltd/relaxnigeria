@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import dbConnect from "@/lib/mongodb";
+import User from "@/models/User";
 
 export async function GET() {
   try {
@@ -10,31 +12,34 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // In a real application, you would fetch this from your database
-    // For now, we'll return mock data based on the session
-    // The Member ID should have been generated during registration
-    const mockMemberData = {
-      firstName: session.user.name?.split(' ')[0] || 'John',
-      lastName: session.user.name?.split(' ').slice(1).join(' ') || 'Doe',
-      email: session.user.email,
-      phone: '08012345678', // This should come from database
-      state: 'Lagos',
-      lga: 'Ikeja',
-      ward: 'Ojota',
-      votersCard: '90F5B1103A295500632', // This should come from database
-      memberSince: new Date().toLocaleDateString('en-US', {
+    await dbConnect();
+    const user = await User.findOne({ email: session.user.email.toLowerCase() });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found." }, { status: 404 });
+    }
+
+    const memberData = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      phone: user.phone || "",
+      state: user.state || "",
+      lga: user.lga || "",
+      ward: user.ward || "",
+      votersCard: user.votersCard || "",
+      nin: user.nin || "",
+      memberSince: new Date(user.createdAt || Date.now()).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',
         day: 'numeric'
       }),
-      // Use a consistent Member ID - in production this would be stored in database
-      // This should match the Member ID generated during registration
-      memberId: `RTFIN-${session.user.email?.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 8) || 'UNKNOWN'}-2026`
+      memberId: `RTFIN-${user._id.toString().toUpperCase().slice(-8)}-2026`
     };
 
     return NextResponse.json({
       success: true,
-      memberData: mockMemberData
+      memberData
     });
 
   } catch (error) {

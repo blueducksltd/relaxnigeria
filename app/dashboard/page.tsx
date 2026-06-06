@@ -283,8 +283,9 @@ export default function UserDashboard() {
                 justify-content: space-between;
                 font-size: 8px;
             `
+            const locationText = [memberData.ward, memberData.state].filter(Boolean).join(', ');
             bottomDiv.innerHTML = `
-                <div style="opacity: 0.8;">📍 ${memberData.ward}, ${memberData.lga}</div>
+                <div style="opacity: 0.8;">${locationText ? `📍 ${locationText}` : ''}</div>
                 <div style="background: #fbbf24; color: #064e3b; font-weight: 800; padding: 1px 6px; border-radius: 100px; text-transform: uppercase; font-size: 6px;">Verified</div>
             `
             tempDiv.appendChild(bottomDiv)

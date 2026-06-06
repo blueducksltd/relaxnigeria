@@ -35,6 +35,7 @@ export async function GET(request: NextRequest) {
       lga: user.lga || "",
       ward: user.ward || "",
       votersCard: user.votersCard || "",
+      nin: user.nin || "",
       role: "user",
       createdAt: user.createdAt
     }));

@@ -7,9 +7,10 @@ const UserSchema = new Schema(
     phone: { type: String, required: true, trim: true },
     email: { type: String, required: true, unique: true, lowercase: true, trim: true },
     password: { type: String, required: true },
-    votersCard: { type: String, required: true, trim: true },
+    votersCard: { type: String, trim: true },
+    nin: { type: String, trim: true },
     state: { type: String, required: true },
-    lga: { type: String, required: true },
+    lga: { type: String },
     ward: { type: String, required: true },
     dob: { type: String, required: true },
     role: { type: String, default: "user" },
@@ -20,5 +21,10 @@ const UserSchema = new Schema(
   { timestamps: true }
 );
 
-const User = models.User || model("User", UserSchema);
+// Clear cached model to ensure schema updates are loaded on Next.js hot-reloads
+if (models.User) {
+  delete (models as any).User;
+}
+
+const User = model("User", UserSchema);
 export default User;

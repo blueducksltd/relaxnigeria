@@ -11,10 +11,11 @@ interface MemberIDCardProps {
         lastName: string;
         email: string;
         phone: string;
-        state: string;
-        lga: string;
-        ward: string;
-        votersCard: string;
+        state?: string;
+        lga?: string;
+        ward?: string;
+        votersCard?: string;
+        nin?: string;
         memberSince: string;
         memberId: string;
         photo?: string;
@@ -98,7 +99,7 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
 
                     <div style="margin-top: auto; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; font-size: 8px;">
                         <div style="display: flex; align-items: center; gap: 4px; opacity: 0.8;">
-                            <span>📍 ${memberData.ward}, ${memberData.lga}, ${memberData.state}</span>
+                            ${[memberData.ward, memberData.lga, memberData.state].filter(Boolean).join(', ') ? `<span>📍 ${[memberData.ward, memberData.lga, memberData.state].filter(Boolean).join(', ')}</span>` : ''}
                         </div>
                         <div style="background: ${colors.accent}; color: ${colors.primary}; font-weight: 900; height: 14px; padding: 0 10px; border-radius: 100px; display: flex; align-items: center; justify-content: center; text-transform: uppercase; font-size: 6.5px; line-height: 1;">Active Member</div>
                     </div>
@@ -121,7 +122,7 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
 
                     <div style="margin-top: 10px; width: 100%; display: flex; justify-content: space-between; align-items: flex-end; font-size: 7px; opacity: 0.6;">
                         <div style="text-align: left;">
-                            <div>VIN: ${memberData.votersCard}</div>
+                            <div>NIN: ${memberData.nin || memberData.votersCard || 'N/A'}</div>
                             <div>Phone: ${memberData.phone}</div>
                         </div>
                         <div style="text-align: right; font-style: italic; border-top: 1px solid rgba(255,255,255,0.4); padding-top: 4px; width: 60px;">
@@ -210,7 +211,10 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
             doc.line(6, 46, 80, 46);
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(7);
-            doc.text(`\u2022 ${memberData.ward}, ${memberData.lga}, ${memberData.state}`.toUpperCase(), 6, 50);
+            const locationText = [memberData.ward, memberData.lga, memberData.state].filter(Boolean).join(', ');
+            if (locationText) {
+                doc.text(`\u2022 ${locationText}`.toUpperCase(), 6, 50);
+            }
             
             // Member Badge
             doc.setFillColor(251, 191, 36);
@@ -252,7 +256,7 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
 
             // Legal info
             doc.setFontSize(5);
-            doc.text(`VIN: ${memberData.votersCard}`, 6, 50);
+            doc.text(`NIN: ${memberData.nin || memberData.votersCard || 'N/A'}`, 6, 50);
             doc.text(`PHN: ${memberData.phone}`, 6, 52);
             
             doc.setDrawColor(255, 255, 255, 0.2);
@@ -399,10 +403,12 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
                             </div>
 
                             <div className="pt-3 border-t border-white/10 flex justify-between items-center text-[8px] font-bold">
-                                <div className="flex items-center gap-1.5 text-white/80 uppercase tracking-wide">
-                                    <MapPin className="w-2.5 h-2.5 text-amber-400" />
-                                    <span>{memberData.ward}, {memberData.lga}, {memberData.state}</span>
-                                </div>
+                                {(memberData.ward || memberData.lga || memberData.state) ? (
+                                    <div className="flex items-center gap-1.5 text-white/80 uppercase tracking-wide">
+                                        <MapPin className="w-2.5 h-2.5 text-amber-400" />
+                                        <span>{[memberData.ward, memberData.lga, memberData.state].filter(Boolean).join(', ')}</span>
+                                    </div>
+                                ) : <div />}
                                 <div className="bg-amber-400 px-2 py-0.5 rounded-full text-[#064e3b] uppercase">Member</div>
                             </div>
                         </div>
@@ -433,7 +439,7 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
 
                             <div className="w-full pt-2 flex justify-between items-end border-t border-white/10 mt-auto">
                                 <div className="text-[7px] text-left space-y-0.5 text-white/40 font-mono">
-                                    <p>VIN: {memberData.votersCard}</p>
+                                    <p>NIN: {memberData.nin || memberData.votersCard || 'N/A'}</p>
                                     <p>PHN: {memberData.phone}</p>
                                 </div>
                                 <div className="text-right">
