@@ -440,6 +440,19 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
                                         </div>
                                     </div>
 
+                                    {/* Consent checkbox */}
+                                    <div className="flex items-start gap-3 pt-2">
+                                        <input
+                                            required
+                                            type="checkbox"
+                                            id="agreeToMessages"
+                                            className="mt-1 shrink-0 rounded border-darkgreen/20 text-darkgreen focus:ring-darkgreen/40 focus:ring-offset-0 focus:outline-none w-4 h-4 cursor-pointer"
+                                        />
+                                        <label htmlFor="agreeToMessages" className="text-xs text-darkgreen/70 leading-normal select-none cursor-pointer">
+                                            I accept and agree to receive updates and messages from RelaxNigeria.
+                                        </label>
+                                    </div>
+
                                     {/* Submit */}
                                     <div className="pt-4">
                                         <button
