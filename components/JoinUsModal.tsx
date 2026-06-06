@@ -14,12 +14,12 @@ type NinStatus = 'idle' | 'verifying' | 'verified' | 'failed';
 
 const formatDateToInput = (dateStr: string): string => {
     if (!dateStr) return '';
-    
+
     // Check if already in yyyy-mm-dd format
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
         return dateStr;
     }
-    
+
     // Check for dd-mm-yyyy or dd/mm/yyyy
     const parts = dateStr.split(/[-/]/);
     if (parts.length === 3) {
@@ -36,7 +36,7 @@ const formatDateToInput = (dateStr: string): string => {
             return `${yyyy}-${ddOrMm2}-${ddOrMm1}`;
         }
     }
-    
+
     try {
         const d = new Date(dateStr);
         if (!isNaN(d.getTime())) {
@@ -45,8 +45,8 @@ const formatDateToInput = (dateStr: string): string => {
             const dd = String(d.getDate()).padStart(2, '0');
             return `${yyyy}-${mm}-${dd}`;
         }
-    } catch (e) {}
-    
+    } catch (e) { }
+
     return '';
 };
 
@@ -449,7 +449,7 @@ const JoinUsModal: React.FC<JoinUsModalProps> = ({ isOpen, onClose }) => {
                                             className="mt-1 shrink-0 rounded border-darkgreen/20 text-darkgreen focus:ring-darkgreen/40 focus:ring-offset-0 focus:outline-none w-4 h-4 cursor-pointer"
                                         />
                                         <label htmlFor="agreeToMessages" className="text-xs text-darkgreen/70 leading-normal select-none cursor-pointer">
-                                            I accept and agree to receive updates and messages from RelaxNigeria.
+                                            I accept and agree to receive updates and messages from RTFIN Enugu.
                                         </label>
                                     </div>
 

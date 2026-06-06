@@ -74,7 +74,7 @@ export default function AdminMembersPage() {
         return matchSearch && matchState
     })
 
-    const states = [...new Set(members.map(m => m.state))].sort()
+    const states = [...new Set(members.map(m => m.state).filter(Boolean))].sort() as string[]
 
     if (loading) return (
         <div className="flex items-center justify-center py-32">
