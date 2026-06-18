@@ -15,7 +15,7 @@ interface MemberIDCardProps {
         lga?: string;
         ward?: string;
         votersCard?: string;
-        nin?: string;
+        // nin?: string;
         memberSince: string;
         memberId: string;
         photo?: string;
@@ -122,7 +122,7 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
 
                     <div style="margin-top: 10px; width: 100%; display: flex; justify-content: space-between; align-items: flex-end; font-size: 7px; opacity: 0.6;">
                         <div style="text-align: left;">
-                            <div>NIN: ${memberData.nin || memberData.votersCard || 'N/A'}</div>
+                            <div>VIN: ${memberData.votersCard || 'N/A'}</div>
                             <div>Phone: ${memberData.phone}</div>
                         </div>
                         <div style="text-align: right; font-style: italic; border-top: 1px solid rgba(255,255,255,0.4); padding-top: 4px; width: 60px;">
@@ -256,7 +256,7 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
 
             // Legal info
             doc.setFontSize(5);
-            doc.text(`NIN: ${memberData.nin || memberData.votersCard || 'N/A'}`, 6, 50);
+            doc.text(`VIN: ${memberData.votersCard || 'N/A'}`, 6, 50);
             doc.text(`PHN: ${memberData.phone}`, 6, 52);
             
             doc.setDrawColor(255, 255, 255, 0.2);
@@ -439,7 +439,7 @@ const MemberIDCard: React.FC<MemberIDCardProps> = ({ memberData }) => {
 
                             <div className="w-full pt-2 flex justify-between items-end border-t border-white/10 mt-auto">
                                 <div className="text-[7px] text-left space-y-0.5 text-white/40 font-mono">
-                                    <p>NIN: {memberData.nin || memberData.votersCard || 'N/A'}</p>
+                                    <p>VIN: {memberData.votersCard || 'N/A'}</p>
                                     <p>PHN: {memberData.phone}</p>
                                 </div>
                                 <div className="text-right">

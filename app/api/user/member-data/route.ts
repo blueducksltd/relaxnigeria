@@ -28,7 +28,7 @@ export async function GET() {
       lga: user.lga || "",
       ward: user.ward || "",
       votersCard: user.votersCard || "",
-      nin: user.nin || "",
+      // nin: user.nin || "",
       memberSince: new Date(user.createdAt || Date.now()).toLocaleDateString('en-US', {
         year: 'numeric',
         month: 'long',

@@ -14,7 +14,7 @@ interface Member {
     lga?: string
     ward?: string
     votersCard?: string
-    nin?: string
+    // nin?: string
     createdAt: string
 }
 
@@ -155,7 +155,7 @@ export default function AdminMembersPage() {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <CreditCard className="w-3.5 h-3.5 shrink-0" />
-                                    <span className="truncate">NIN: {member.nin || member.votersCard || 'N/A'}</span>
+                                    <span className="truncate">VIN: {member.votersCard || 'N/A'}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <Calendar className="w-3.5 h-3.5 shrink-0" />

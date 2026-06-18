@@ -1,20 +1,18 @@
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-  return NextResponse.json({ error: "NIN verification is currently disabled." }, { status: 400 });
-}
-
-/*
-export async function POST(req: Request) {
   try {
-    const { number } = await req.json();
+    const { number, first_name, last_name, dob, lga, state } = await req.json();
 
     if (!number || number.trim().length < 5) {
-      return NextResponse.json({ error: "A valid Virtual NIN (VNIN) or NIN is required." }, { status: 400 });
+      return NextResponse.json({ error: "A valid VIN is required." }, { status: 400 });
     }
 
-    console.log("Verifying NIN with Prembly...");
-    const response = await fetch("https://api.prembly.com/verification/vnin-basic", {
+    if (!first_name || !last_name || !dob || !lga || !state) {
+      return NextResponse.json({ error: "First name, last name, date of birth, LGA, and state are required for verification." }, { status: 400 });
+    }
+
+    const response = await fetch("https://api.prembly.com/verification/voters_card", {
       method: "POST",
       headers: {
         "x-api-key": process.env.PREMBLY_API_KEY!,
@@ -23,16 +21,20 @@ export async function POST(req: Request) {
       },
       body: JSON.stringify({
         number: number.trim(),
+        first_name: first_name.trim(),
+        last_name: last_name.trim(),
+        dob: dob, // Format should be YYYY-MM-DD
+        lga: lga.trim(),
+        state: state.trim(),
       }),
     });
 
     const data = await response.json();
-    console.log("Prembly verification response:", data);
 
     // Prembly returns { status: true/false, data: {...} }
     if (!response.ok || data.status === false) {
       return NextResponse.json(
-        { verified: false, error: data.detail || data.message || "NIN verification failed." },
+        { verified: false, error: data.detail || data.message || "VIN verification failed." },
         { status: 400 }
       );
     }
@@ -42,9 +44,7 @@ export async function POST(req: Request) {
       detail: data.data || data.detail || {},
     });
   } catch (err) {
-    console.error("NIN verification error:", err);
+    console.error("VIN verification error:", err);
     return NextResponse.json({ error: "Verification service unavailable." }, { status: 500 });
   }
 }
-*/
-
